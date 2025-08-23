@@ -1,0 +1,6 @@
+{
+  "model": "nous-hermes:latest",
+  "prompt": "Придумай легенду о великом дереве",
+  "stream": false
+}
+

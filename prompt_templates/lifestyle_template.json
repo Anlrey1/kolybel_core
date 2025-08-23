@@ -1,0 +1,103 @@
+{
+  "schema_version": "1.0",
+  "template_id": "b79c27c9-c16d-432a-bddb-9bdeb4212fc9",
+  "channel_theme": "lifestyle",
+  "title": "🌱 Лайфстайл Канал",
+  "description": "Советы и вдохновение для повседневной жизни",
+  "content_strategy": {
+    "core_categories": ["wellness", "productivity", "relationships", "home", "style"],
+    "content_formats": ["tip", "checklist", "inspiration", "story"],
+    "seasonal_themes": {
+      "spring": ["renewal", "cleaning"],
+      "summer": ["travel", "outdoor"]
+    }
+  },
+  "default_post": {
+    "post_id": "53616dbc-5052-4326-82b0-6c257f8bd98e",
+    "title": "",
+    "type": "text",
+    "content": "Создай {format} по теме '{topic}' для {audience}. Акцент на {benefit}. Стиль: {tone}.",
+    "media_url": "",
+    "tags": [
+      "#тренд",
+      "#лайфстайл",
+      "#советы",
+      "#вдохновение",
+      "#{custom_tag}"
+    ],
+    "target_audience": {
+      "age": "16-35",
+      "lifestyles": ["minimalist", "busy_pro", "creative"],
+      "interests": ["self_care", "organization", "mindfulness"]
+    },
+    "platform_origin": "",
+    "author": {
+      "username": "kolybel_core",
+      "role": "lifestyle_curator",
+      "signature": "Ваш гид по осознанной жизни ✨"
+    },
+    "schedule": {
+      "optimal_times": ["08:00", "12:30", "19:00"],
+      "frequency": "2-3 posts/day"
+    },
+    "status": "draft",
+    "engagement": {
+      "plan": ["reaction", "comments", "saves"],
+      "interaction_prompts": [
+        "Как вам этот совет? 💭",
+        "Поделитесь своим опытом...",
+        "Какие темы вас интересуют? 👇"
+      ]
+    },
+    "reaction_stats": {
+      "likes": 0,
+      "views": 0,
+      "saves": 0,
+      "shares": 0,
+      "comments": 0
+    },
+    "language": "ru",
+    "content_guidelines": {
+      "tone_options": ["warm", "motivational", "practical"],
+      "prohibited_content": ["unverified_advice", "promotion"]
+    },
+    "content_examples": {
+      "morning_routine": "5 утренних привычек для продуктивного дня → #рутина #продуктивность",
+      "home_hack": "Как организовать маленькую кухню: 3 гениальных решения → #лайфхак #дом",
+      "mindfulness": "Техника 4-7-8 для мгновенного снятия стресса → #осознанность #здоровье"
+    }
+  },
+  "rubrics": [
+    {
+      "name": "ежедневное",
+      "description": "посты каждый день",
+      "content_types": ["daily_tip", "question_of_the_day"]
+    },
+    {
+      "name": "тренды",
+      "description": "актуальные темы из соцсетей",
+      "sources": ["Pinterest", "Instagram", "TikTok"]
+    },
+    {
+      "name": "глубокое",
+      "description": "осмысленные материалы",
+      "formats": ["guide", "interview", "case_study"]
+    }
+  ],
+  "allow_external_trend_sources": true,
+  "moderation": {
+    "fact_checking": true,
+    "sensitivity_check": ["body_image", "mental_health"]
+  },
+  "performance_metrics": {
+    "engagement_goals": {
+      "save_rate": 0.05,
+      "comment_rate": 0.03
+    },
+    "quality_metrics": ["practicality_score", "inspiration_score"]
+  },
+  "integration": {
+    "trend_sources": ["Google Trends", "BuzzSumo"],
+    "content_tools": ["Canva", "Adobe Spark"]
+  }
+}

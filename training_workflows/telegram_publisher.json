@@ -1,0 +1,81 @@
+{
+  "name": "Telegram Publisher Agent",
+  "nodes": [
+    {
+      "parameters": {
+        "cronExpression": "0 9,15,20 * * *"
+      },
+      "name": "Schedule",
+      "type": "n8n-nodes-base.cron",
+      "typeVersion": 1,
+      "position": [240, 300]
+    },
+    {
+      "parameters": {
+        "url": "{{rss_url}}",
+        "responseFormat": "string"
+      },
+      "name": "Get RSS",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 1,
+      "position": [440, 300]
+    },
+    {
+      "parameters": {
+        "functionCode": "const parser = require('fast-xml-parser');\nconst parsed = parser.parse(items[0].json.body);\nconst entries = parsed.rss.channel.item.slice(0, 3);\n\nreturn entries.map(e => ({ json: { text: `${e.title}\n${e.link}` } }));"
+      },
+      "name": "Parse RSS",
+      "type": "n8n-nodes-base.function",
+      "typeVersion": 1,
+      "position": [640, 300]
+    },
+    {
+      "parameters": {
+        "url": "https://api.telegram.org/bot{{telegram_token}}/sendMessage",
+        "method": "POST",
+        "jsonParameters": true,
+        "options": {},
+        "bodyParametersJson": "{\n  \"chat_id\": \"{{chat_id}}\",\n  \"text\": \"={{$json[\\\"text\\\"]}}\"\n}"
+      },
+      "name": "Post to Telegram",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 1,
+      "position": [860, 300]
+    }
+  ],
+  "connections": {
+    "Schedule": {
+      "main": [
+        [
+          {
+            "node": "Get RSS",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get RSS": {
+      "main": [
+        [
+          {
+            "node": "Parse RSS",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parse RSS": {
+      "main": [
+        [
+          {
+            "node": "Post to Telegram",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  }
+}

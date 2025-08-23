@@ -1,0 +1,82 @@
+version: '3.8'
+
+services:
+  cradle-llm:
+    build:
+      context: .
+      dockerfile: Dockerfile.ollama
+    container_name: cradle-llm
+    ports:
+      - "11434:11434"
+    volumes:
+      - ollama_data:/root/.ollama
+    environment:
+      - OLLAMA_HOST=0.0.0.0:11434
+      - OLLAMA_ORIGINS=*
+    dns:
+      - 8.8.8.8
+      - 1.1.1.1
+    networks:
+      - kolybel-net
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:11434/api/tags"]
+      interval: 60s
+      timeout: 20s
+      retries: 3
+      start_period: 120s
+
+  ollama-https-proxy:
+    build: ./ollama-https-proxy
+    container_name: ollama-https-proxy
+    ports:
+      - "443:443"
+    volumes:
+      - ./ssl:/etc/nginx/certs:ro
+    environment:
+      - NGINX_ENVSUBST_TEMPLATE_SUFFIX=.conf
+    restart: unless-stopped
+    networks:
+      - kolybel-net
+    depends_on:
+      cradle-llm:
+        condition: service_healthy
+
+  n8n:
+    image: n8nio/n8n:0.236.3
+    container_name: n8n
+    ports:
+      - "5678:5678"
+    restart: unless-stopped
+    environment:
+      - N8N_BASIC_AUTH_ACTIVE=true
+      - N8N_BASIC_AUTH_USER=admin
+      - N8N_BASIC_AUTH_PASSWORD=admin123  # 🔐 замени на свой
+      - N8N_HOST=localhost
+      - N8N_PORT=5678
+      - TZ=Asia/Novosibirsk
+    volumes:
+      - ./n8n-docker/n8n_data:/home/node/.n8n
+    dns:
+      - 8.8.8.8
+      - 1.1.1.1
+    networks:
+      - kolybel-net
+    depends_on:
+      cradle-llm:
+        condition: service_healthy
+
+volumes:
+  ollama_data:
+    driver: local
+    driver_opts:
+      type: none
+      device: ./ollama_data
+      o: bind
+
+networks:
+  kolybel-net:
+    driver: bridge
+    attachable: true
+    ipam:
+      config:
+        - subnet: 172.20.0.0/24

@@ -1,0 +1,108 @@
+{
+  "schema_version": "1.0",
+  "template_id": "8e838bd1-1d2a-4395-add9-4b1f6fcb564a",
+  "channel_theme": "memes",
+  "title": "📸 Мемы/Креатив Канал",
+  "description": "Юмор, мемы, реакции, шутки на трендовые темы",
+  "content_strategy": {
+    "meme_types": ["image_macro", "reaction", "template", "deep_fried"],
+    "humor_styles": ["absurd", "satire", "meta", "relatable"],
+    "viral_potential": ["shareability", "timeliness", "nostalgia_factor"]
+  },
+  "default_post": {
+    "post_id": "4fea0fd9-c2b0-4a79-8316-edfab0c5b026",
+    "title": "",
+    "type": "media",
+    "content": "Создай {meme_type} про {topic} в стиле {humor_style}. Акцент на {viral_factor}. Теги: {tags}",
+    "media_url": "",
+    "tags": [
+      "#тренд",
+      "#мемы",
+      "#юмор",
+      "#реакции",
+      "{custom_tag}"
+    ],
+    "target_audience": {
+      "age": "16–35",
+      "internet_culture": ["зумеры", "миллениалы"],
+      "humor_preferences": ["dark", "wholesome", "meta"]
+    },
+    "platform_origin": "",
+    "author": {
+      "username": "kolybel_core",
+      "role": "meme_alchemist",
+      "signature": "Генератор кринжа и рофлов 🤡"
+    },
+    "schedule": {
+      "peak_times": ["09:00", "12:00", "16:00", "21:00"],
+      "frequency": "3-5 posts/day"
+    },
+    "status": "draft",
+    "engagement": {
+      "plan": ["reaction", "shares", "remixes"],
+      "interaction_prompts": [
+        "Кто понял — тот лысый 😂",
+        "Ставь ❤️ если в топку этот мем",
+        "Допиши капибару в комменты..."
+      ]
+    },
+    "reaction_stats": {
+      "likes": 0,
+      "views": 0,
+      "shares": 0,
+      "saves": 0,
+      "remixes": 0,
+      "comment_emojis": {}
+    },
+    "language": "ru",
+    "content_guidelines": {
+      "banned_topics": ["травля", "дискриминация"],
+      "inside_jokes": ["капибара", "тян", "превед"],
+      "meme_currency": ["кринж", "база", "рофл"]
+    },
+    "content_examples": {
+      "image_macro": "Когда делаешь 'npm install' и видишь 69 уязвимостей → #программисты #мемы",
+      "reaction": "Мое лицо, когда просыпаюсь в понедельник: [фото кота с глазами-тарелками] #реакция #понедельник",
+      "meta": "Мем про то, как делают мемы про мемы → #мета #юмор"
+    }
+  },
+  "rubrics": [
+    {
+      "name": "ежедневное",
+      "description": "посты каждый день",
+      "themes": ["утренний_кринж", "вечерний_рофл"]
+    },
+    {
+      "name": "тренды",
+      "description": "актуальные темы из соцсетей",
+      "sources": ["Двач", "Twitter", "Telegram-стайл"]
+    },
+    {
+      "name": "глубокое",
+      "description": "анализ мем-культуры",
+      "formats": ["история_мема", "психология_виральности"]
+    }
+  ],
+  "allow_external_trend_sources": true,
+  "moderation": {
+    "edge_humor": {
+      "allowed": true,
+      "disclaimer_required": true
+    },
+    "reaction_checks": ["негативные_комменты > 5% = review"]
+  },
+  "performance_metrics": {
+    "viral_score": {
+      "share_ratio": 0.0,
+      "remix_factor": 0.0
+    },
+    "success_thresholds": {
+      "min_shares": 20,
+      "remix_goal": 5
+    }
+  },
+  "integration": {
+    "meme_tools": ["ImgFlip", "Kapwing"],
+    "trend_engines": ["KnowYourMeme", "TikTok Trends"]
+  }
+}

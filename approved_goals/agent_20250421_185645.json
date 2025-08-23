@@ -1,0 +1,14 @@
+(модель: deepseek-coder)
+{
+  "workflow": {
+    // Trigger conditions for every day at specific times (in 24-hour format) - in order of execution, starting from the first time specified below until tomorrow's morning next weekday
+	"triggers" : [{"name":"RSS trigger", "type":"time_expression","seconds":[60],"cron_expression":["3"]}],  // runs every minute after midnight (in Unix-like timestamps format, seconds since the epoch) until tomorrow's morning
+    /*"triggers2" : [{"name":"RSS trigger", "type":"time","seconds":[60],"minutes_of_day":["9:30"]}], // runs every minute after 15 minutes past midnight (in Unix-like timestamps format, seconds since the epoch) until tomorrow's morning */
+		"steps" : [   {    "name":"Fetch RSS",     "inputs":{       "_n8n_unique_id_" : "%RSS.json%","uri":"https://dtf.ru/rss"},  // Triggers an action to fetch new content from the specified URL
+										"type"        :    "http-get",             },                  {"name":"_JSONParsingTelegram_1652839407","inputs":{       "_n8n_unique_id_"     :   "%TELEGRAM.json%"},
+																		"type"      :    "telegrambot",           },  {"name":"Style Updates Telegram Channel (LLM) ",                   // Triggers an action to fetch new content from the specified URL and style it using LLMs's stylesheet API for children under 18
+                 							  						"inputs":{       "_n8n_unique_id_" : "%Telegrambot.json%"},"type":"telegram-bot",                      }, {     "name":"Publish Results in Telegram Channel (in chat -1002669388680)",
+                 							  						"inputs":{       "_n8n_unique_id_" : "%Telegrambot.json%","chatId" 			: "@miniaturekids",       			      },    // Publishes the results back to Telegram channel in chat -1002669388680
+                 							  						"type":"telegram-bot"}, {         "_n8n_id" :  "%TELEGRAM.json%","name": "Telegrambot",         		     },             {"inputs":{       _uniqueID: %RSSfeedlinks123456790%.uri,        inputName:"URL"},         // This is the variable part of your workflow which fetches new content from RSS feed
+                 							  						"type":"http-post",                    }]}}}  --- Ends JSON structure for N8N Workflow. It'll provide an action to fetch news and then style it using LLMs stylesheet API, finally publish the result in Telegram channel via telegrambot actions."         
+```json}   You can replace %RSSfeedlinks123456790% with unique id for your RSS feed links.  And you need to provide a correct chat ID @miniaturekids, as the bot must be in that specific channel才能 send messages there (replace it by actual Telegram Channel).

@@ -1,0 +1,58 @@
+{
+  "schema_version": "1.0",
+  "template_id": "8750f727-a024-4d7d-bae5-838a30c489b2",
+  "channel_theme": "finance",
+  "title": "📈 Финансы Канал",
+  "description": "Личные финансы, цифры, аналитика и советы",
+  "content_strategy": {
+  "financial_categories": ["инвестиции", "бюджет", "криптовалюты"],
+  "formats": ["совет", "анализ тренда", "кейс"],
+  "expert_levels": ["новичок", "профессионал"]
+  },
+  "default_post": {
+    "post_id": "8f81ec9a-8766-439b-9c2f-b346fd06f8a8",
+    "title": "",
+    "type": "text",
+    "content": "Создай пост по теме '{topic}' в стиле канала '📈 Финансы'. Не более 2 предложений. Используй релевантные теги и стиль.",
+    "media_url": "",
+    "tags": ["#тренд", "#finance"],
+    "target_age": "16–35",
+    "platform_origin": "",
+    "author": "kolybel_core",
+    "schedule_time": "2025-05-03T07:58:18.342338Z",
+    "status": "draft",
+    "engagement_plan": {
+      "primary_action": "reaction",
+      "cta_text": "Какой совет был самым полезным? 👇"
+    },
+    "tone_options": ["neutral", "educational"],
+    "poll_options": [],
+    "reaction_stats": {
+      "likes": 0,
+      "views": 0,
+      "clicks": 0,
+      "comments": 0
+    },
+    "language": "ru",
+    "external_reference": {
+      "trend_source": "Google Trends",
+      "trend_score": 0.0
+    }
+  },
+  "rubrics": [
+    {
+      "name": "ежедневное",
+      "description": "посты каждый день"
+    },
+    {
+      "name": "тренды",
+      "description": "актуальные темы из соцсетей"
+    }
+  ],
+  "allow_external_trend_sources": true,
+  "content_rules": {
+    "max_length": 120,
+    "hashtag_limit": 3,
+    "blocked_words": ["scam"]
+  }
+}

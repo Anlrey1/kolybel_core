@@ -1,0 +1,10 @@
+(модель: deepseek-coder)
+{
+  "$schema": "http://json-schema.org/draft-07/workflow",
+  "title": "RSS to Telegram Workflow for Children and Adolescent Edition",
+  "type" : "object",
+    "properties": {  
+        "trigger_frequency":"string",        
+            },    
+      "required": ["trigger_frequency"],      
+           }

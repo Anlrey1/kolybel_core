@@ -1,0 +1,100 @@
+(модель: mistral)
+ ```json
+{
+  "id": "your_workflow_id",
+  "version": 1,
+  "name": "Daily News Aggregator",
+  "description": "",
+  "trigger": {
+    "id": "time-trigger",
+    "type": "schedule",
+    "action": {
+      "action_id": "actions.time.cron",
+      "configuration": {
+        "timezone": "UTC",
+        "expression": "0 0 9,15,20 * *"
+      }
+    }
+  },
+  "nodes": [
+    {
+      "id": "rss-node",
+      "type": "webhook",
+      "name": "RSS Feed",
+      "config": {
+        "url": "https://dtf.ru/rss",
+        "method": "GET"
+      },
+      "position": 1,
+      "connection_id_from": null,
+      "connection_id_to": null
+    },
+    {
+      "id": "parse-node",
+      "type": "parser",
+      "name": "Parse RSS Feed",
+      "config": {
+        "type": "xml",
+        "xpath": "[/rss][/channel][item]",
+        "output_json_array": true
+      },
+      "position": 2,
+      "connection_id_from": "rss-node",
+      "connection_id_to": null
+    },
+    {
+      "id": "headline-node",
+      "type": "jsonPath",
+      "name": "Extract Headlines",
+      "config": {
+        "expression": "$['$.title']"
+      },
+      "position": 3,
+      "connection_id_from": "parse-node",
+      "connection_id_to": null
+    },
+    {
+      "id": "link-node",
+      "type": "jsonPath",
+      "name": "Extract Links",
+      "config": {
+        "expression": "$['$.link']"
+      },
+      "position": 4,
+      "connection_id_from": "parse-node",
+      "connection_id_to": null
+    },
+    {
+      "id": "llm-node",
+      "type": "webhook",
+      "name": "Language Model",
+      "config": {
+        "url": "https://api.your-language-model.com/v1/generate",
+        "method": "POST",
+        "body": "{ \"input\": \"$[headline]\", \"temperature\": 0.7, \"max_length\": 280, \"top_p\": 0.95, \"presence_penalty\": 0, \"frequency_penalty\": 0.3 }"
+      },
+      "position": 5,
+      "connection_id_from": {
+        "headline-node": "output1",
+        "link-node": "output1"
+      },
+      "connection_id_to": null
+    },
+    {
+      "id": "telegram-node",
+      "type": "webhook",
+      "name": "Telegram Bot",
+      "config": {
+        "url": "https://api.telegram.org/botTOKEN/sendMessage",
+        "method": "POST",
+        "body": "{\"chat_id\": -1002669388680, \"text\": \"$[llm-node]\", \"parse_mode\": HTML}"
+      },
+      "position": 6,
+      "connection_id_from": "llm-node",
+      "connection_id_to": null
+    }
+  ]
+}
+```
+
+Замените `your_workflow_id`, `https://api.your-language-model.com/v1/generate` и `TOKEN` на собственные значения.

@@ -1,0 +1,88 @@
+{
+  "schema_version": "1.0",
+  "template_id": "0bce427e-bd80-48f2-88fa-fd40838f24fa",
+  "channel_theme": "motivation",
+  "title": "🧘‍♂️ Мотивация Канал",
+  "description": "Цитаты, вызовы, вдохновляющие форматы",
+  "content_strategy": {
+    "primary_formats": ["quote", "challenge", "story"],
+    "tone": ["inspirational", "empowering", "calm"],
+    "character_limit": 300
+  },
+  "default_post": {
+    "post_id": "a1906683-51a3-4dc9-a2a9-c04e42adeccd",
+    "title": "",
+    "type": "text",
+    "content": "Создай {format} по теме '{topic}' в стиле канала '🧘‍♂️ Мотивация'. Используй {tone} тон. Теги: {tags}.",
+    "media_url": "",
+    "tags": [
+      "#тренд",
+      "#motivation",
+      "#развитие",
+      "#успех"
+    ],
+    "target_audience": {
+      "age": "16–35",
+      "personas": ["студенты", "предприниматели", "спортсмены"],
+      "psychographic": ["целеустремленные", "ищущие вдохновение"]
+    },
+    "platform_origin": "",
+    "author": {
+      "username": "kolybel_core",
+      "role": "motivation_coach",
+      "signature": "Твой ежедневный источник энергии ⚡"
+    },
+    "schedule": {
+      "optimal_times": ["08:00", "12:00", "20:00"],
+      "timezone": "Europe/Moscow"
+    },
+    "status": "draft",
+    "engagement": {
+      "plan": ["reaction", "comments", "user_stories"],
+      "cta_options": [
+        "Как вам эта цитата? 💬",
+        "Поделитесь вашим опытом...",
+        "Кто вас вдохновляет? 👇"
+      ]
+    },
+    "reaction_stats": {
+      "likes": 0,
+      "views": 0,
+      "shares": 0,
+      "saves": 0,
+      "comments": 0
+    },
+    "language": "ru",
+    "content_examples": {
+      "quote": "«Путь в тысячу миль начинается с первого шага» — Лао-Цзы #мотивация #цитата",
+      "challenge": "7-дневный челлендж: Каждый день делай 1 дело, которое тебя пугает. Готовы? 💪 #вызов #рост",
+      "story": "Как я потерял работу и нашел свое призвание: история Михаила → #историяуспеха #вдохновение"
+    }
+  },
+  "rubrics": [
+    {
+      "name": "ежедневное",
+      "description": "посты каждый день",
+      "content_types": ["morning_quote", "evening_reflection"]
+    },
+    {
+      "name": "тренды",
+      "description": "актуальные темы из соцсетей",
+      "sources": ["TikTok", "YouTube Shorts"]
+    },
+    {
+      "name": "глубокое",
+      "description": "осмысленные материалы",
+      "subcategories": ["биографии", "психология успеха"]
+    }
+  ],
+  "allow_external_trend_sources": true,
+  "moderation": {
+    "banned_words": ["депрессия", "провал"],
+    "required_positivity_score": 0.8
+  },
+  "performance_metrics": {
+    "target_engagement_rate": 0.07,
+    "viral_potential_indicators": ["shares", "saves"]
+  }
+}

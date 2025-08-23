@@ -1,0 +1,12 @@
+(модель: deepseek-coder)
+{
+  "$schema": "http://www.n8n.io/schemas/v1",
+  	"description":"Automated bot for news updates from RSS feeds.",
+   	0 : {
+      		 "name"          :         "New News Update Trigger Node",             			      // название узла
+       	 									    	     							 “Triggered when there are new articles on the specified time”,  	// описание узла
+          	"type":"trigger","required":["node_triggertime"],	        										          "default":{"mode":"cron",   			       // режим триггера (crontab) для 3 раза в день на 9:00,15:00 и20-0
+          	"hours" : ["8","4"],  									            "days":["*"]}     	    			                   // Время тригга (Hour in 24 Hours format) - указываем что триггер будет выполнен каждый день с 9:00 до 15:00 и 20:00
+          "inputs":{  					                 		             	   	    			                   	"trigger_time":"now" }    // тип для этого узла - ввод/выходные данные не использовать, так как они должны быть определены в режиме тригга
+      	}  	                     			          // конец первого узла     					     }                                                                              		       				 	// конец рабоlowfu.json文件    }}                  - не использовать этот символ, он закончит файлик
+  	}	 // конец первых уровня workflows					                                                                                          }                                                     			 					// конец JSON-агента n8n    }}               - не использовать этот символ, он закончит файлик

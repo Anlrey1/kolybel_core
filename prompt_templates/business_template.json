@@ -1,0 +1,104 @@
+{
+  "schema_version": "1.0",
+  "template_id": "ec787284-f6fd-45e6-b622-966085cbb4d8",
+  "channel_theme": "business",
+  "title": "💼 Бизнес Канал",
+  "description": "Советы, тренды и кейсы для предпринимателей",
+  "content_strategy": {
+    "core_themes": ["стартапы", "управление", "маркетинг", "финансы"],
+    "formats": ["case_study", "quick_tip", "trend_analysis"],
+    "expert_levels": ["новичок", "профи"]
+  },
+  "default_post": {
+    "post_id": "51a2c559-e03f-4239-97d5-7b73f2bc3050",
+    "title": "",
+    "type": "text",
+    "content": "Создай {format} по теме '{topic}' для {audience}. Основной акцент: {focus}. Длина: {length}. Стиль: {style}.",
+    "media_url": "",
+    "tags": [
+      "#тренд",
+      "#business",
+      "#стартап",
+      "#маркетинг"
+    ],
+    "target_audience": {
+      "age": "16–35",
+      "roles": ["founder", "manager", "freelancer"],
+      "business_stage": ["idea", "early", "growth"]
+    },
+    "platform_origin": "",
+    "author": {
+      "username": "kolybel_core",
+      "role": "business_analyst",
+      "signature": "Ваш гид в мире бизнеса →"
+    },
+    "schedule": {
+      "optimal_days": ["пн", "ср", "пт"],
+      "time_slots": ["09:00", "12:30", "18:00"]
+    },
+    "status": "draft",
+    "engagement": {
+      "plan": ["reaction", "comments", "saves"],
+      "cta_templates": [
+        "Как вы решали подобные задачи? 💼",
+        "Какой совет был самым полезным? 👇",
+        "Делитесь опытом в комментариях!"
+      ]
+    },
+    "reaction_stats": {
+      "likes": 0,
+      "views": 0,
+      "shares": 0,
+      "saves": 0,
+      "comments": 0
+    },
+    "language": "ru",
+    "content_rules": {
+      "max_length": 250,
+      "required_elements": ["проблема", "решение", "выгода"],
+      "prohibited_topics": ["инсайдерская информация"]
+    },
+    "content_examples": {
+      "case_study": "Как кафе в провинции увеличило выручку на 200% за 3 месяца → #кейс #малыйбизнес",
+      "quick_tip": "3 способа снизить операционные расходы без потери качества → #совет #экономия",
+      "trend_analysis": "Почему нишевые SaaS-продукты растут в 2025: разбор тренда → #аналитика #стартап"
+    }
+  },
+  "rubrics": [
+    {
+      "name": "ежедневное",
+      "description": "посты каждый день",
+      "subthemes": ["цифра_дня", "совет_дня"]
+    },
+    {
+      "name": "тренды",
+      "description": "актуальные темы из соцсетей",
+      "monitoring_sources": ["LinkedIn", "VC.ru"]
+    },
+    {
+      "name": "глубокое",
+      "description": "аналитические материалы",
+      "requirements": {
+        "min_length": 500,
+        "sources": 2,
+        "expert_validation": true
+      }
+    }
+  ],
+  "allow_external_trend_sources": true,
+  "moderation": {
+    "required_approval": true,
+    "sensitive_areas": ["финансовые отчеты", "персональные данные"]
+  },
+  "performance_metrics": {
+    "kpi": {
+      "target_ctr": 0.05,
+      "min_saves": 15
+    },
+    "viral_factors": ["practical_value", "uniqueness"]
+  },
+  "integration": {
+    "data_sources": ["Crunchbase", "Statista"],
+    "export_formats": ["csv", "json"]
+  }
+}

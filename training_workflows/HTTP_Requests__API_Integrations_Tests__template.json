@@ -1,0 +1,730 @@
+{
+  "name": "HTTP Requests: API Integrations Tests",
+  "nodes": [
+    {
+      "parameters": {},
+      "id": "4aae27bc-3a3d-4a4c-8b11-97a000f4bc0b",
+      "name": "When clicking ‘Test workflow’",
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        3840,
+        100
+      ]
+    },
+    {
+      "parameters": {
+        "url": "https://serpapi.com/search",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "engine",
+              "value": "google_maps"
+            },
+            {
+              "name": "q",
+              "value": "=Coffee Shops"
+            },
+            {
+              "name": "api_key",
+              "value": "{{serpapi_key}}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "bda44b1c-50f8-40dc-8253-d6ee7a94ba0e",
+      "name": "Google Maps SERP API Request",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        4682,
+        -340
+      ],
+      "alwaysOutputData": false,
+      "retryOnFail": true,
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "url": "https://serpapi.com/search",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "engine",
+              "value": "google"
+            },
+            {
+              "name": "q",
+              "value": "site:linkedin.com/company/ \"Tech Company\" \"New York\""
+            },
+            {
+              "name": "api_key",
+              "value": "{{serpapi_key}}"
+            },
+            {
+              "name": "google_domain",
+              "value": "google.com"
+            },
+            {
+              "name": "gl",
+              "value": "us"
+            },
+            {
+              "name": "hl",
+              "value": "en"
+            },
+            {
+              "name": "start",
+              "value": "=1"
+            },
+            {
+              "name": "num",
+              "value": "10"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "2b4009bb-4246-4656-9ade-7cc4c9c5a758",
+      "name": "Google SERP-LinkedIn",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        4682,
+        -120
+      ]
+    },
+    {
+      "parameters": {
+        "url": "https://serpapi.com/search",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "engine",
+              "value": "google"
+            },
+            {
+              "name": "q",
+              "value": "Coffee"
+            },
+            {
+              "name": "api_key",
+              "value": "{{serpapi_key}}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "4fd1af31-c121-4d4f-ae53-3fb8799c5d87",
+      "name": "cURL Code Import Test",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        4420,
+        -140
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "170da7a2-abf1-47c8-bfe0-b2da2943e37b",
+              "name": "search_field",
+              "value": "site:linkedin.com/company/ \"Tech Company\" \"New York\"",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "34c0aba2-a9b5-4e92-9d43-6e3a91326512",
+      "name": "Edit Fields",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        4422,
+        80
+      ]
+    },
+    {
+      "parameters": {
+        "url": "https://serpapi.com/search",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": " engine",
+              "value": "google"
+            },
+            {
+              "name": "q",
+              "value": "={{ $json.search_field }}"
+            },
+            {
+              "name": "api_key",
+              "value": "{{serpapi_key}}"
+            },
+            {
+              "name": "gl",
+              "value": "us"
+            },
+            {
+              "name": "start_page",
+              "value": "10"
+            },
+            {
+              "name": "num",
+              "value": "10"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "323105d6-5bc2-46eb-b8ca-c46076277f2f",
+      "name": "HTTP Request_Dynamic Parameter fields",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        4682,
+        80
+      ]
+    },
+    {
+      "parameters": {
+        "url": "https://serpapi.com/search",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": " engine",
+              "value": "google"
+            },
+            {
+              "name": "q",
+              "value": "site:linkedin.com/company/ \"Tech Company\" \"New York\""
+            },
+            {
+              "name": "api_key",
+              "value": "{{serpapi_key}}"
+            },
+            {
+              "name": "gl",
+              "value": "us"
+            },
+            {
+              "name": "start_page",
+              "value": "10"
+            },
+            {
+              "name": "num",
+              "value": "10"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "9f4c5223-b1d9-48b4-97f3-a5c9b6e2a9d5",
+      "name": "HTTP Request Basics",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        4420,
+        -340
+      ]
+    },
+    {
+      "parameters": {
+        "method": "PATCH",
+        "url": "{{airtable_base_id}}/{{airtable_table_id}}",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "Bearer {{airtable_token}}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "{\n  \"fields\": {\n    \"First Name\": \"Adam\",\n    \"Last Name\": \"Silverhand\",\n    \"Job Title\": \"Lead Software Engineer\",\n    \"Company\": \"Arasaka Corporation\",\n    \"Job Type\": \"Middle Management\",\n    \"Status\": \"Active\"\n  }\n}",
+        "options": {}
+      },
+      "id": "ba7b51b5-fbd6-4897-b991-0803c3817ee3",
+      "name": "Airtable Update Record",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        4542,
+        500
+      ]
+    },
+    {
+      "parameters": {
+        "url": "{{airtable_base_id}}/{{airtable_table_id}}",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "Bearer {{airtable_token}}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "cc0d2227-b73d-4d06-9682-d50510751481",
+      "name": "Airtable Get Record",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        4342,
+        500
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "{{airtable_base_id}}/{{airtable_table_id}}",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "Bearer {{airtable_token}}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "{\n  \"records\": [\n    {\n      \"fields\": {\n        \"First Name\": \"Altiera\",\n        \"Last Name\": \"Cunningham\",\n        \"Job Title\": \"Lead AI Development\",\n        \"Company\": \"Arasaka Corporation\",\n        \"Job Type\": \"Middle Management\",\n        \"Status\": \"Active\"\n      }\n    }\n  ]\n}",
+        "options": {}
+      },
+      "id": "79f7a3cf-ca6a-45e4-a1c1-f2f2a0e7a260",
+      "name": "Airtable Create Record",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        4742,
+        500
+      ]
+    },
+    {
+      "parameters": {
+        "url": "{{airtable_base_id}}/{{airtable_table_id}}",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "Bearer {{airtable_token}}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "3ae65036-8804-463c-984a-8175e8db8219",
+      "name": "Airtable List Records",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        4342,
+        740
+      ]
+    },
+    {
+      "parameters": {
+        "method": "DELETE",
+        "url": "{{airtable_base_id}}/{{airtable_table_id}}",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "Bearer {{airtable_token}}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "cb891da0-2670-49df-b1a2-dc1ace495301",
+      "name": "Airtable Delete Record",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        4540,
+        740
+      ]
+    },
+    {
+      "parameters": {
+        "content": "## Airtable API HTTP Requests Sample\n**Required:\n - Airtable Personal Access Token\n - Airtable database (base ID, table ID)",
+        "height": 570.2351761192086,
+        "width": 621.5790424932343
+      },
+      "id": "7801d8fa-ef80-4a07-b49f-78b6b35b0ad6",
+      "name": "Sticky Note",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        4280,
+        360
+      ]
+    },
+    {
+      "parameters": {
+        "content": "## HTTP Request Examples using SERP API\n**Required:\n - Google SERP API Key",
+        "height": 729.0768174979859,
+        "width": 608.0050844598782,
+        "color": 5
+      },
+      "id": "c4915067-d692-4ae5-81d5-5cf8a595d097",
+      "name": "Sticky Note1",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        4280,
+        -460
+      ]
+    }
+  ],
+  "pinData": {
+    "HTTP Request_Dynamic Parameter fields": [
+      {
+        "json": {
+          "search_metadata": {
+            "id": "677a76cd78823f29adc38c45",
+            "status": "Success",
+            "json_endpoint": "https://serpapi.com/searches/745a7b6db510fae9/677a76cd78823f29adc38c45.json",
+            "created_at": "2025-01-05 12:10:53 UTC",
+            "processed_at": "2025-01-05 12:10:53 UTC",
+            "google_url": "https://www.google.com/search?q=site%3Alinkedin.com%2Fcompany%2F+%22Tech+Company%22+%22New+York%22&oq=site%3Alinkedin.com%2Fcompany%2F+%22Tech+Company%22+%22New+York%22&gl=us&num=10&sourceid=chrome&ie=UTF-8",
+            "raw_html_file": "https://serpapi.com/searches/745a7b6db510fae9/677a76cd78823f29adc38c45.html",
+            "total_time_taken": 2.16
+          },
+          "search_parameters": {
+            "engine": "google",
+            "q": "site:linkedin.com/company/ \"Tech Company\" \"New York\"",
+            "google_domain": "google.com",
+            "gl": "us",
+            "num": "10",
+            "device": "desktop"
+          },
+          "search_information": {
+            "query_displayed": "site:linkedin.com/company/ \"Tech Company\" \"New York\"",
+            "total_results": 22800,
+            "time_taken_displayed": 0.33,
+            "organic_results_state": "Results for exact spelling"
+          },
+          "organic_results": [
+            {
+              "position": 1,
+              "title": "Tech:NYC",
+              "link": "https://www.linkedin.com/company/tech-nyc",
+              "redirect_link": "https://www.google.com/url?sa=t&source=web&rct=j&opi=89978449&url=https://www.linkedin.com/company/tech-nyc&ved=2ahUKEwjzkJK7xt6KAxVorokEHWV7HnsQFnoECAoQAQ",
+              "displayed_link": "5.8K+ followers",
+              "favicon": "https://serpapi.com/searches/677a76cd78823f29adc38c45/images/a95d0149f36257897a43679d399f7b5ac0b17652524a56c4b683e6e4bc6af716.png",
+              "snippet": "... tech company while fostering the most inclusive, sustainable, and forward ... New York, New York. NYC Tech Talent Pipeline. Government Administration. Rho.",
+              "snippet_highlighted_words": [
+                "tech company",
+                "New York",
+                "New York"
+              ],
+              "source": "LinkedIn · Tech:NYC"
+            },
+            {
+              "position": 2,
+              "title": "New York Technology Company",
+              "link": "https://www.linkedin.com/company/new-york-technology-company",
+              "redirect_link": "https://www.google.com/url?sa=t&source=web&rct=j&opi=89978449&url=https://www.linkedin.com/company/new-york-technology-company&ved=2ahUKEwjzkJK7xt6KAxVorokEHWV7HnsQFnoECB0QAQ",
+              "displayed_link": "150+ followers",
+              "favicon": "https://serpapi.com/searches/677a76cd78823f29adc38c45/images/a95d0149f36257897a43679d399f7b5a02511c831ed00a324c37bf8c8be18974.png",
+              "snippet": "Web Design Company in New York. Computer Networking Products · Ochsoft - A New York Tech Company. Software Development · The New York Times Company · Security ...",
+              "snippet_highlighted_words": [
+                "New York",
+                "New York Tech Company",
+                "New York"
+              ],
+              "source": "LinkedIn · New York Technology Company"
+            },
+            {
+              "position": 3,
+              "title": "Tech:NYC",
+              "link": "https://cn.linkedin.com/company/tech-nyc",
+              "redirect_link": "https://www.google.com/url?sa=t&source=web&rct=j&opi=89978449&url=https://cn.linkedin.com/company/tech-nyc&ved=2ahUKEwjzkJK7xt6KAxVorokEHWV7HnsQFnoECCQQAQ",
+              "displayed_link": "https://cn.linkedin.com › company › tech-nyc",
+              "snippet": "\"You cannot be a successful tech company without ... Julie was presented with the Future of New York ... New York，New York · Rho. 金融服务 · NYC Tech Talent ...",
+              "snippet_highlighted_words": [
+                "tech company",
+                "New York",
+                "New York",
+                "New York"
+              ],
+              "source": "LinkedIn"
+            },
+            {
+              "position": 4,
+              "title": "Tech Company Inc",
+              "link": "https://www.linkedin.com/company/techcompanyinc",
+              "redirect_link": "https://www.google.com/url?sa=t&source=web&rct=j&opi=89978449&url=https://www.linkedin.com/company/techcompanyinc&ved=2ahUKEwjzkJK7xt6KAxVorokEHWV7HnsQFnoECCgQAQ",
+              "displayed_link": "10+ followers",
+              "favicon": "https://serpapi.com/searches/677a76cd78823f29adc38c45/images/a95d0149f36257897a43679d399f7b5aca3b43ed35561d58954d82a5c52ec6bb.png",
+              "snippet": "Tech Company Inc | 15 followers on LinkedIn. Consulting firm helping ... Saratoga Springs, New York. Miami Beach Convention Center. Hospitality. Miami ...",
+              "snippet_highlighted_words": [
+                "Tech Company",
+                "New York"
+              ],
+              "source": "LinkedIn · Tech Company Inc"
+            },
+            {
+              "position": 5,
+              "title": "New York Tech Loop",
+              "link": "https://www.linkedin.com/company/new-york-tech-loop",
+              "redirect_link": "https://www.google.com/url?sa=t&source=web&rct=j&opi=89978449&url=https://www.linkedin.com/company/new-york-tech-loop&ved=2ahUKEwjzkJK7xt6KAxVorokEHWV7HnsQFnoECCMQAQ",
+              "displayed_link": "530+ followers",
+              "favicon": "https://serpapi.com/searches/677a76cd78823f29adc38c45/images/a95d0149f36257897a43679d399f7b5abdf9557004c9b5756906f8d917b9e51d.png",
+              "snippet": "New York, New York · CENCOMPU New York. Information Technology & Services. NY ... Ochsoft - A New York Tech Company. Software Development. Show more similar ...",
+              "snippet_highlighted_words": [
+                "New York",
+                "New York",
+                "New York",
+                "New York Tech Company"
+              ],
+              "source": "LinkedIn · New York Tech Loop"
+            },
+            {
+              "position": 6,
+              "title": "Tech:NYC",
+              "link": "https://ru.linkedin.com/company/tech-nyc",
+              "redirect_link": "https://www.google.com/url?sa=t&source=web&rct=j&opi=89978449&url=https://ru.linkedin.com/company/tech-nyc&ved=2ahUKEwjzkJK7xt6KAxVorokEHWV7HnsQFnoECCIQAQ",
+              "displayed_link": "5.8K+ followers",
+              "favicon": "https://serpapi.com/searches/677a76cd78823f29adc38c45/images/a95d0149f36257897a43679d399f7b5a6a4132b3cb69efcac7a0928d5b31207a.png",
+              "snippet": "Ami will discuss founding and scaling a high-impact tech company, the ... Государственное управление. New York, New York · NYC Tech Talent Pipeline.",
+              "snippet_highlighted_words": [
+                "tech company",
+                "New York",
+                "New York"
+              ],
+              "source": "LinkedIn · Tech:NYC"
+            },
+            {
+              "position": 7,
+              "title": "PlomX Tech",
+              "link": "https://www.linkedin.com/company/plomxtech",
+              "redirect_link": "https://www.google.com/url?sa=t&source=web&rct=j&opi=89978449&url=https://www.linkedin.com/company/plomxtech&ved=2ahUKEwjzkJK7xt6KAxVorokEHWV7HnsQFnoECB4QAQ",
+              "displayed_link": "13.3K+ followers",
+              "favicon": "https://serpapi.com/searches/677a76cd78823f29adc38c45/images/a95d0149f36257897a43679d399f7b5a39bb2dbe93383c0c76ace6058cb7739d.png",
+              "snippet": "A chance to grow with a fast-paced, innovative tech company. ... New York, NY. Devsinc. IT Services and IT Consulting. San Francisco, California ...",
+              "snippet_highlighted_words": [
+                "tech company",
+                "New York"
+              ],
+              "source": "LinkedIn · PlomX Tech"
+            },
+            {
+              "position": 8,
+              "title": "Helix Tech IT Services",
+              "link": "https://www.linkedin.com/company/helixtechservices",
+              "redirect_link": "https://www.google.com/url?sa=t&source=web&rct=j&opi=89978449&url=https://www.linkedin.com/company/helixtechservices&ved=2ahUKEwjzkJK7xt6KAxVorokEHWV7HnsQFnoECDMQAQ",
+              "displayed_link": "20.9K+ followers",
+              "favicon": "https://serpapi.com/searches/677a76cd78823f29adc38c45/images/a95d0149f36257897a43679d399f7b5a76927b9d692ebd397f11ab978096cfad.png",
+              "snippet": "... tech company. Let Helix Tech IT Service turn the tables for your goals and ... Similar pages. CodeX Tech-IT LLC. IT Services and IT Consulting. New York, NY ...",
+              "snippet_highlighted_words": [
+                "tech company",
+                "New York"
+              ],
+              "source": "LinkedIn · Helix Tech IT Services"
+            },
+            {
+              "position": 9,
+              "title": "ODDITY",
+              "link": "https://www.linkedin.com/company/odditytech",
+              "redirect_link": "https://www.google.com/url?sa=t&source=web&rct=j&opi=89978449&url=https://www.linkedin.com/company/odditytech&ved=2ahUKEwjzkJK7xt6KAxVorokEHWV7HnsQFnoECDoQAQ",
+              "displayed_link": "23.4K+ followers",
+              "favicon": "https://serpapi.com/searches/677a76cd78823f29adc38c45/images/a95d0149f36257897a43679d399f7b5a465f50d26e334cf561069b1f36adadec.png",
+              "snippet": "ODDITY. Technology, Information and Internet. New York, NY 23,382 followers. ODDITY is a consumer-tech company built to transform ...",
+              "snippet_highlighted_words": [
+                "New York",
+                "tech company"
+              ],
+              "source": "LinkedIn · ODDITY"
+            },
+            {
+              "position": 10,
+              "title": "Clancy Tech Company",
+              "link": "https://www.linkedin.com/company/clancy-tech-company",
+              "redirect_link": "https://www.google.com/url?sa=t&source=web&rct=j&opi=89978449&url=https://www.linkedin.com/company/clancy-tech-company&ved=2ahUKEwjzkJK7xt6KAxVorokEHWV7HnsQFnoECDYQAQ",
+              "displayed_link": "20+ followers",
+              "favicon": "https://serpapi.com/searches/677a76cd78823f29adc38c45/images/a95d0149f36257897a43679d399f7b5a73dd61e024118b5ccdbbc15ea7a88650.png",
+              "snippet": "New York, NY. Type: Partnership. Founded: 2015. Locations. Primary. 379 West Broadway. New York, NY, US. Get directions. Employees at Clancy Tech Company. Click ...",
+              "snippet_highlighted_words": [
+                "New York",
+                "New York",
+                "Tech Company"
+              ],
+              "source": "LinkedIn · Clancy Tech Company"
+            }
+          ],
+          "related_searches": [
+            {
+              "block_position": 1,
+              "query": "List of tech company new york",
+              "link": "https://www.google.com/search?sca_esv=e69469cd99bb1d9c&gl=us&q=List+of+tech+company+new+york&sa=X&ved=2ahUKEwjzkJK7xt6KAxVorokEHWV7HnsQ1QJ6BAgyEAE",
+              "serpapi_link": "https://serpapi.com/search.json?device=desktop&engine=google&gl=us&google_domain=google.com&num=10&q=List+of+tech+company+new+york"
+            },
+            {
+              "block_position": 1,
+              "query": "Tech company new york hiring",
+              "link": "https://www.google.com/search?sca_esv=e69469cd99bb1d9c&gl=us&q=Tech+company+new+york+hiring&sa=X&ved=2ahUKEwjzkJK7xt6KAxVorokEHWV7HnsQ1QJ6BAgxEAE",
+              "serpapi_link": "https://serpapi.com/search.json?device=desktop&engine=google&gl=us&google_domain=google.com&num=10&q=Tech+company+new+york+hiring"
+            }
+          ],
+          "pagination": {
+            "current": 1,
+            "next": "https://www.google.com/search?q=site:linkedin.com/company/+%22Tech+Company%22+%22New+York%22&sca_esv=e69469cd99bb1d9c&gl=us&ei=z3Z6Z7PtEejcptQP5fb52Ac&start=10&sa=N&sstk=ATObxK6Nt8Gmgguktf6Z3QAIP5T9sZLddJN5qxeAcrJXLYGBaj-nO5R6wUUkr46IayPHNFtyjPOPnll8Mv9zacDdsP5lqMWveHHVkQ&ved=2ahUKEwjzkJK7xt6KAxVorokEHWV7HnsQ8NMDegQILxAW",
+            "other_pages": {
+              "2": "https://www.google.com/search?q=site:linkedin.com/company/+%22Tech+Company%22+%22New+York%22&sca_esv=e69469cd99bb1d9c&gl=us&ei=z3Z6Z7PtEejcptQP5fb52Ac&start=10&sa=N&sstk=ATObxK6Nt8Gmgguktf6Z3QAIP5T9sZLddJN5qxeAcrJXLYGBaj-nO5R6wUUkr46IayPHNFtyjPOPnll8Mv9zacDdsP5lqMWveHHVkQ&ved=2ahUKEwjzkJK7xt6KAxVorokEHWV7HnsQ8tMDegQILxAE",
+              "3": "https://www.google.com/search?q=site:linkedin.com/company/+%22Tech+Company%22+%22New+York%22&sca_esv=e69469cd99bb1d9c&gl=us&ei=z3Z6Z7PtEejcptQP5fb52Ac&start=20&sa=N&sstk=ATObxK6Nt8Gmgguktf6Z3QAIP5T9sZLddJN5qxeAcrJXLYGBaj-nO5R6wUUkr46IayPHNFtyjPOPnll8Mv9zacDdsP5lqMWveHHVkQ&ved=2ahUKEwjzkJK7xt6KAxVorokEHWV7HnsQ8tMDegQILxAG",
+              "4": "https://www.google.com/search?q=site:linkedin.com/company/+%22Tech+Company%22+%22New+York%22&sca_esv=e69469cd99bb1d9c&gl=us&ei=z3Z6Z7PtEejcptQP5fb52Ac&start=30&sa=N&sstk=ATObxK6Nt8Gmgguktf6Z3QAIP5T9sZLddJN5qxeAcrJXLYGBaj-nO5R6wUUkr46IayPHNFtyjPOPnll8Mv9zacDdsP5lqMWveHHVkQ&ved=2ahUKEwjzkJK7xt6KAxVorokEHWV7HnsQ8tMDegQILxAI",
+              "5": "https://www.google.com/search?q=site:linkedin.com/company/+%22Tech+Company%22+%22New+York%22&sca_esv=e69469cd99bb1d9c&gl=us&ei=z3Z6Z7PtEejcptQP5fb52Ac&start=40&sa=N&sstk=ATObxK6Nt8Gmgguktf6Z3QAIP5T9sZLddJN5qxeAcrJXLYGBaj-nO5R6wUUkr46IayPHNFtyjPOPnll8Mv9zacDdsP5lqMWveHHVkQ&ved=2ahUKEwjzkJK7xt6KAxVorokEHWV7HnsQ8tMDegQILxAK",
+              "6": "https://www.google.com/search?q=site:linkedin.com/company/+%22Tech+Company%22+%22New+York%22&sca_esv=e69469cd99bb1d9c&gl=us&ei=z3Z6Z7PtEejcptQP5fb52Ac&start=50&sa=N&sstk=ATObxK6Nt8Gmgguktf6Z3QAIP5T9sZLddJN5qxeAcrJXLYGBaj-nO5R6wUUkr46IayPHNFtyjPOPnll8Mv9zacDdsP5lqMWveHHVkQ&ved=2ahUKEwjzkJK7xt6KAxVorokEHWV7HnsQ8tMDegQILxAM",
+              "7": "https://www.google.com/search?q=site:linkedin.com/company/+%22Tech+Company%22+%22New+York%22&sca_esv=e69469cd99bb1d9c&gl=us&ei=z3Z6Z7PtEejcptQP5fb52Ac&start=60&sa=N&sstk=ATObxK6Nt8Gmgguktf6Z3QAIP5T9sZLddJN5qxeAcrJXLYGBaj-nO5R6wUUkr46IayPHNFtyjPOPnll8Mv9zacDdsP5lqMWveHHVkQ&ved=2ahUKEwjzkJK7xt6KAxVorokEHWV7HnsQ8tMDegQILxAO",
+              "8": "https://www.google.com/search?q=site:linkedin.com/company/+%22Tech+Company%22+%22New+York%22&sca_esv=e69469cd99bb1d9c&gl=us&ei=z3Z6Z7PtEejcptQP5fb52Ac&start=70&sa=N&sstk=ATObxK6Nt8Gmgguktf6Z3QAIP5T9sZLddJN5qxeAcrJXLYGBaj-nO5R6wUUkr46IayPHNFtyjPOPnll8Mv9zacDdsP5lqMWveHHVkQ&ved=2ahUKEwjzkJK7xt6KAxVorokEHWV7HnsQ8tMDegQILxAQ",
+              "9": "https://www.google.com/search?q=site:linkedin.com/company/+%22Tech+Company%22+%22New+York%22&sca_esv=e69469cd99bb1d9c&gl=us&ei=z3Z6Z7PtEejcptQP5fb52Ac&start=80&sa=N&sstk=ATObxK6Nt8Gmgguktf6Z3QAIP5T9sZLddJN5qxeAcrJXLYGBaj-nO5R6wUUkr46IayPHNFtyjPOPnll8Mv9zacDdsP5lqMWveHHVkQ&ved=2ahUKEwjzkJK7xt6KAxVorokEHWV7HnsQ8tMDegQILxAS",
+              "10": "https://www.google.com/search?q=site:linkedin.com/company/+%22Tech+Company%22+%22New+York%22&sca_esv=e69469cd99bb1d9c&gl=us&ei=z3Z6Z7PtEejcptQP5fb52Ac&start=90&sa=N&sstk=ATObxK6Nt8Gmgguktf6Z3QAIP5T9sZLddJN5qxeAcrJXLYGBaj-nO5R6wUUkr46IayPHNFtyjPOPnll8Mv9zacDdsP5lqMWveHHVkQ&ved=2ahUKEwjzkJK7xt6KAxVorokEHWV7HnsQ8tMDegQILxAU"
+            }
+          },
+          "serpapi_pagination": {
+            "current": 1,
+            "next_link": "https://serpapi.com/search.json?device=desktop&engine=google&gl=us&google_domain=google.com&num=10&q=site%3Alinkedin.com%2Fcompany%2F+%22Tech+Company%22+%22New+York%22&start=10",
+            "next": "https://serpapi.com/search.json?device=desktop&engine=google&gl=us&google_domain=google.com&num=10&q=site%3Alinkedin.com%2Fcompany%2F+%22Tech+Company%22+%22New+York%22&start=10",
+            "other_pages": {
+              "2": "https://serpapi.com/search.json?device=desktop&engine=google&gl=us&google_domain=google.com&num=10&q=site%3Alinkedin.com%2Fcompany%2F+%22Tech+Company%22+%22New+York%22&start=10",
+              "3": "https://serpapi.com/search.json?device=desktop&engine=google&gl=us&google_domain=google.com&num=10&q=site%3Alinkedin.com%2Fcompany%2F+%22Tech+Company%22+%22New+York%22&start=20",
+              "4": "https://serpapi.com/search.json?device=desktop&engine=google&gl=us&google_domain=google.com&num=10&q=site%3Alinkedin.com%2Fcompany%2F+%22Tech+Company%22+%22New+York%22&start=30",
+              "5": "https://serpapi.com/search.json?device=desktop&engine=google&gl=us&google_domain=google.com&num=10&q=site%3Alinkedin.com%2Fcompany%2F+%22Tech+Company%22+%22New+York%22&start=40",
+              "6": "https://serpapi.com/search.json?device=desktop&engine=google&gl=us&google_domain=google.com&num=10&q=site%3Alinkedin.com%2Fcompany%2F+%22Tech+Company%22+%22New+York%22&start=50",
+              "7": "https://serpapi.com/search.json?device=desktop&engine=google&gl=us&google_domain=google.com&num=10&q=site%3Alinkedin.com%2Fcompany%2F+%22Tech+Company%22+%22New+York%22&start=60",
+              "8": "https://serpapi.com/search.json?device=desktop&engine=google&gl=us&google_domain=google.com&num=10&q=site%3Alinkedin.com%2Fcompany%2F+%22Tech+Company%22+%22New+York%22&start=70",
+              "9": "https://serpapi.com/search.json?device=desktop&engine=google&gl=us&google_domain=google.com&num=10&q=site%3Alinkedin.com%2Fcompany%2F+%22Tech+Company%22+%22New+York%22&start=80",
+              "10": "https://serpapi.com/search.json?device=desktop&engine=google&gl=us&google_domain=google.com&num=10&q=site%3Alinkedin.com%2Fcompany%2F+%22Tech+Company%22+%22New+York%22&start=90"
+            }
+          }
+        }
+      }
+    ]
+  },
+  "connections": {
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request_Dynamic Parameter fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "When clicking ‘Test workflow’": {
+      "main": [
+        [
+          {
+            "node": "Airtable Get Record",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Airtable List Records",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "cURL Code Import Test",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Google Maps SERP API Request",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Google SERP-LinkedIn",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "HTTP Request Basics",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Airtable Update Record": {
+      "main": [
+        [
+          {
+            "node": "Airtable Create Record",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Airtable Get Record": {
+      "main": [
+        [
+          {
+            "node": "Airtable Update Record",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Airtable List Records": {
+      "main": [
+        [
+          {
+            "node": "Airtable Delete Record",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Airtable Create Record": {
+      "main": [
+        []
+      ]
+    },
+    "HTTP Request Basics": {
+      "main": [
+        []
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "30efbcca-ac33-4275-abc9-d77c97aa96d3",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "80dda94540258c8a9249877c5128f67d88ca1bcc72725380688b9a5c6a7a5d1f"
+  },
+  "id": "DCkRifJdoGcy987f",
+  "tags": []
+}

@@ -1,0 +1,98 @@
+{
+  "schema_version": "1.0",
+  "template_id": "b6e2383c-8389-4512-a22c-5bb012839b6d",
+  "channel_theme": "politics",
+  "title": "📰 Политика Канал",
+  "description": "Анализ, мнения и важные события в мире политики",
+  "content_strategy": {
+  "political_fields": ["международные отношения", "внутренняя политика", "выборы"],
+  "content_formats": ["аналитика", "новость", "опрос"],
+  "complexity_levels": ["базовый", "экспертный"]
+  },
+  "default_post": {
+    "post_id": "50fe5e8e-c51b-4a41-a067-1638b0fe47a8",
+    "title": "",
+    "type": "text",
+    "content": "Создай пост по теме '{topic}' в стиле канала '📰 Политика'. Не более 2 предложений. Используй релевантные теги и стиль.",
+    "media_url": "",
+    "tags": [
+      "#тренд",
+      "#politics",
+      "#аналитика"
+    ],
+    "target_audience": {
+      "age": "16–35",
+      "geo": ["RU", "UA", "KZ"],
+      "interests": ["международные отношения", "экономика", "выборы"]
+    },
+    "platform_origin": "",
+    "author": {
+      "username": "kolybel_core",
+      "role": "editor",
+      "signature": "Команда Политика Канала"
+    },
+    "schedule": {
+      "publish_time": "2025-05-03T07:58:18.342148Z",
+      "timezone": "Europe/Moscow",
+      "auto_delete_after": "30d"
+    },
+    "status": "draft",
+    "engagement": {
+      "plan": ["reaction", "comments"],
+      "cta": "Как вы оцениваете эту ситуацию? Пишите в комментариях!",
+      "expected_metrics": {
+        "min_comments": 10,
+        "min_shares": 5
+      }
+    },
+    "poll_options": [],
+    "reaction_stats": {
+      "likes": 0,
+      "views": 0,
+      "clicks": 0,
+      "comments": 0,
+      "shares": 0
+    },
+    "language": "ru",
+    "content_rules": {
+      "max_length": 120,
+      "allowed_formats": ["text", "poll", "link"],
+      "prohibited_topics": ["экстремизм", "фейки"]
+    },
+    "external_references": {
+      "trend_source": "Twitter/Google Trends",
+      "fact_checking_url": ""
+    }
+  },
+  "rubrics": [
+    {
+      "name": "ежедневное",
+      "description": "посты каждый день",
+      "posting_frequency": "daily"
+    },
+    {
+      "name": "тренды",
+      "description": "актуальные темы из соцсетей",
+      "sources": ["Twitter", "Telegram-каналы"]
+    },
+    {
+      "name": "глубокое",
+      "description": "осмысленные или аналитические материалы",
+      "min_length": 500,
+      "experts": ["политологи", "журналисты"]
+    }
+  ],
+  "allow_external_trend_sources": true,
+  "moderation": {
+    "required": true,
+    "sensitive_topics": ["конфликты", "санкции"],
+    "pre_moderation": false
+  },
+  "analytics": {
+    "track_metrics": ["views", "comments", "shares"],
+    "success_threshold": {
+      "views": 1000,
+      "engagement_rate": 0.05
+    }
+  }
+}

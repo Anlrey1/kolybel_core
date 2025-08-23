@@ -1,0 +1,706 @@
+{
+  "name": "NL2DB_WF",
+  "nodes": [
+    {
+      "parameters": {
+        "chunkSize": 1500,
+        "chunkOverlap": 200,
+        "options": {
+          "splitCode": "html"
+        }
+      },
+      "id": "a644da3d-e54d-4662-9f53-2fd36d2b2f3b",
+      "name": "Recursive Character Text Splitter",
+      "type": "@n8n/n8n-nodes-langchain.textSplitterRecursiveCharacterTextSplitter",
+      "typeVersion": 1,
+      "position": [
+        800,
+        900
+      ]
+    },
+    {
+      "parameters": {
+        "jsonMode": "expressionData",
+        "jsonData": "={{ $('UNSEEN_IMAP_EMAILS').item.json.textPlain }}",
+        "options": {}
+      },
+      "id": "b928418f-8b06-45f7-80a2-166137845f27",
+      "name": "Default Data Loader",
+      "type": "@n8n/n8n-nodes-langchain.documentDefaultDataLoader",
+      "typeVersion": 1,
+      "position": [
+        720,
+        740
+      ]
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "id": "e0115c53-709b-4b9f-b737-87a2d48994b2",
+      "name": "OpenAI Chat Model1",
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1,
+      "position": [
+        600,
+        740
+      ],
+      "credentials": {
+        "openAiApi": {
+          "id": "xxxxxxxxxxxxxxxxxxxxxxxxx",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "databasePage",
+        "databaseId": {
+          "__rl": true,
+          "value": "xxxxxxxxxxxxxxxxxxxxxxxxx",
+          "mode": "list",
+          "cachedResultName": "n8n-nl-db",
+          "cachedResultUrl": "https://www.notion.so/xxxxxxxxxxxxxxxxxxxxxxxxx"
+        },
+        "title": "={{ $('If_SOURCE_FILTER').item.json.from }}",
+        "propertiesUi": {
+          "propertyValues": [
+            {
+              "key": "NL_Date|date",
+              "includeTime": false,
+              "date": "={{ $('UNSEEN_IMAP_EMAILS').item.json.date }}"
+            },
+            {
+              "key": "NL_GLANCE|rich_text",
+              "textContent": "={{ $json.response.text.split(\" \").slice(0, 35).join(\" \")}}"
+            }
+          ]
+        },
+        "blockUi": {
+          "blockValues": [
+            {
+              "textContent": "={{ $json.response.text }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.notion",
+      "typeVersion": 2.2,
+      "position": [
+        1280,
+        880
+      ],
+      "id": "xxxxxxxxxxxxxxxxxxxxxxxxx",
+      "name": "Notion",
+      "credentials": {
+        "notionApi": {
+          "id": "xxxxxxxxxxxxxxxxxxxxxxxxx",
+          "name": "Notion account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "let result = [];\n// Iterate through each item in the input array\n$input.all().forEach((item, index) => {\n let firstBlock = true;\n const text = item.json.response.text;\n // Get the corresponding FROM and DATE from UNSEEN_IMAP_EMAILS\n const fromEmail = $('IF1_SizeChecker').all()[index].json.from;\n const emailDate = $('IF1_SizeChecker').all()[index].json.date;\n // Split each text into chunks of 1950 characters\n for (let i = 0; i < text.length; i += 1950) {\n result.push({\n \"textSubString\": text.substring(i, i + 1950),\n \"firstBlock\": firstBlock,\n \"from\": fromEmail,\n \"date\": emailDate\n });\n firstBlock = false;\n }\n});\nreturn result;"
+      },
+      "id": "cdcd88ae-db13-4588-ba86-3f1fb4b51474",
+      "name": "Splits text in small chuncks",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1260,
+        560
+      ]
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "combinationMode": "mergeByPosition",
+        "options": {}
+      },
+      "id": "c6c1930f-8eae-44b5-af45-392d96b8bdfc",
+      "name": "Merge1",
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 2.1,
+      "position": [
+        1920,
+        580
+      ]
+    },
+    {
+      "parameters": {
+        "fields": {
+          "values": [
+            {
+              "name": "url",
+              "stringValue": "={{ $json.url }}"
+            }
+          ]
+        },
+        "include": "none",
+        "options": {}
+      },
+      "id": "9409c8c9-e20f-4978-a6b1-0568fc6c2fbc",
+      "name": "Edit Fields",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.2,
+      "position": [
+        1760,
+        440
+      ]
+    },
+    {
+      "parameters": {
+        "content": "## Short summaries\n(smaller than 1950 chars) go to this branch",
+        "height": 260,
+        "width": 340
+      },
+      "id": "56c70c34-a8fc-4f91-a451-ae4de8e5f15d",
+      "name": "Sticky Note",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        1220,
+        780
+      ]
+    },
+    {
+      "parameters": {
+        "resource": "databasePage",
+        "databaseId": {
+          "__rl": true,
+          "value": "xxxxxxxxxxxxxxxxxxxxxxxxx",
+          "mode": "list",
+          "cachedResultName": "n8n-nl-db",
+          "cachedResultUrl": "https://www.notion.so/xxxxxxxxxxxxxxxxxxxxxxxxx"
+        },
+        "title": "={{ $('If_SOURCE_FILTER').item.json.from }}",
+        "simple": false,
+        "propertiesUi": {
+          "propertyValues": [
+            {
+              "key": "NL_Date|date",
+              "includeTime": false,
+              "date": "={{ $json.date }}"
+            },
+            {
+              "key": "NL_GLANCE|rich_text",
+              "textContent": "={{ $json.textSubString.split(\" \").slice(0, 35).join(\" \")}}"
+            }
+          ]
+        },
+        "blockUi": {
+          "blockValues": [
+            {
+              "textContent": "={{ $json.textSubString }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "da3881fc-f441-4c15-a5a1-db7aa59937a9",
+      "name": "Creates the page and adds the first part of text",
+      "type": "n8n-nodes-base.notion",
+      "typeVersion": 2,
+      "position": [
+        1620,
+        440
+      ],
+      "credentials": {
+        "notionApi": {
+          "id": "xxxxxxxxxxxxxxxxxxxxxxxxx",
+          "name": "Notion account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "block",
+        "blockId": {
+          "__rl": true,
+          "value": "={{ $json.url }}",
+          "mode": "url"
+        },
+        "blockUi": {
+          "blockValues": [
+            {
+              "textContent": "={{ $json.textSubString }}"
+            }
+          ]
+        }
+      },
+      "id": "444ab151-a611-4c84-9830-4767afa5d7de",
+      "name": "Adds additional blocks",
+      "type": "n8n-nodes-base.notion",
+      "typeVersion": 2,
+      "position": [
+        2080,
+        580
+      ],
+      "credentials": {
+        "notionApi": {
+          "id": "xxxxxxxxxxxxxxxxxxxxxxxxx",
+          "name": "Notion account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "Creates the page and adds the first part of the text as first page block",
+        "height": 242,
+        "width": 311
+      },
+      "id": "da6b80a8-68eb-45b1-becd-885fc0e800ea",
+      "name": "Sticky Note1",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        1580,
+        360
+      ]
+    },
+    {
+      "parameters": {
+        "content": "Adds the additional blocks inside the same page",
+        "height": 239,
+        "width": 188
+      },
+      "id": "27dcc9a4-1123-4e56-9398-3d0d5ed45d25",
+      "name": "Sticky Note2",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        2040,
+        520
+      ]
+    },
+    {
+      "parameters": {
+        "content": "## Larger Summaries > 1.950 characters (50 security margin vs. the Notion 2.000 characters API-Limit)\nSummary is processed in two branches\nBranch1: initial text block creates the Notion DB-Page Entry AND saves the URL as variable name in the susequent step\nBranch2: subsequent texte blocks (each with max. lenght of 1.950 characters) are appended to the page, based on merging these blocks with the URL from the initial Branch 1\n",
+        "height": 580,
+        "width": 1240
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        1220,
+        200
+      ],
+      "id": "2fcc9006-0c9c-4df7-9ad8-43727d6b41a2",
+      "name": "Sticky Note3"
+    },
+    {
+      "parameters": {
+        "content": "## CHUNKING and WRITING to Notion database\n** to make summary fit the Notion API limitation of 2.000 characters",
+        "height": 920,
+        "width": 1440
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        1020,
+        120
+      ],
+      "id": "ce7d6b26-60e1-4540-9812-6eb2e50c6916",
+      "name": "Sticky Note4"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "boolean": [
+            {
+              "value1": "={{ $json.firstBlock }}",
+              "value2": true
+            }
+          ]
+        }
+      },
+      "id": "7c1dd20c-cc53-414e-8612-2607cfe29e1b",
+      "name": "IF2_BlockSwitcher",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [
+        1440,
+        580
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "number": [
+            {
+              "value1": "={{ $json.response.text.length() }}",
+              "operation": "larger",
+              "value2": 1950
+            }
+          ]
+        }
+      },
+      "id": "038da11d-e6f7-4b0a-b1f0-8407297ce095",
+      "name": "IF1_SizeChecker",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [
+        1040,
+        580
+      ]
+    },
+    {
+      "parameters": {
+        "content": "## genAI-supported SUMMARIZATION\n** Actual genAI-based email summmarization\n** The secret lies in the loader and the prompt ",
+        "height": 560,
+        "width": 480
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        540,
+        480
+      ],
+      "id": "d431bf09-9913-4494-bcd9-50049788d568",
+      "name": "Sticky Note5"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "6553c348-1f14-4185-a1dd-f028692f3a0d",
+              "leftValue": "={{ $json.date}}",
+              "rightValue": "2024-12-29T00:00:00",
+              "operator": {
+                "type": "dateTime",
+                "operation": "after"
+              }
+            }
+          ],
+          "combinator": "or"
+        },
+        "looseTypeValidation": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        140,
+        600
+      ],
+      "id": "4d3d22e7-8163-481d-ae8e-9c581e1dc86c",
+      "name": "If_DATE_FILTER"
+    },
+    {
+      "parameters": {
+        "options": {
+          "customEmailConfig": "[\"UNSEEN\"]"
+        }
+      },
+      "type": "n8n-nodes-base.emailReadImap",
+      "typeVersion": 2,
+      "position": [
+        -40,
+        600
+      ],
+      "id": "e2bfac9f-30ed-4a04-b37e-42781cba251b",
+      "name": "UNSEEN_IMAP_EMAILS",
+      "credentials": {
+        "imap": {
+          "id": "hyTXkHQ9KSa8y5RX",
+          "name": "IMAP account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "ace46cc5-c4be-468d-99a8-540c74d504f7",
+              "leftValue": "={{ $json.from }}",
+              "rightValue": "AlphaSignal <news@alphasignal.ai>",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            },
+            {
+              "id": "9a338992-9ae3-4348-b448-023ec438159e",
+              "leftValue": "={{ $json.from }}",
+              "rightValue": "Horizon AI <mail@joinhorizon.ai>",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            },
+            {
+              "id": "49a0d96f-d464-4ced-8933-a4a6f466a81a",
+              "leftValue": "={{ $json.from }}",
+              "rightValue": "Last Week in AI <lastweekinai+podcast@substack.com>",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            },
+            {
+              "id": "47500963-0cfb-4996-a72a-cd715d2c6ad5",
+              "leftValue": "={{ $json.from }}",
+              "rightValue": "The Neuron <theneuron@newsletter.theneurondaily.com>",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            }
+          ],
+          "combinator": "or"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        360,
+        600
+      ],
+      "id": "920751da-529f-4418-b081-d7a1ab43d909",
+      "name": "If_SOURCE_FILTER"
+    },
+    {
+      "parameters": {
+        "content": "## EMAIL RETRIEVAL\n**With subsquent filter option to finetune the content that goes into the Notion database",
+        "height": 560,
+        "width": 620
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -80,
+        480
+      ],
+      "id": "73e92861-1d03-4057-889d-ed55b27eed17",
+      "name": "Sticky Note6"
+    },
+    {
+      "parameters": {
+        "content": "\nTheoretically, the filtering should also work with the CUSTOM EMAIL RULES option in the UNSEEN_IMAP_EMAILS node. However, tests showed that the nodes has problems to process the filter conditions correctly, resulting in errors. So the workaround is to retrieve a JSON-blob containing all UNSEEN (aka unread) emails and then apply a DATE and a SOURCE filter (operating on the email's FROM field) downstream on the entirety of retrieved UNSEEN emails.",
+        "height": 180,
+        "width": 560
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -60,
+        800
+      ],
+      "id": "7df32ae8-ce70-44f8-b521-ef99e089d3b3",
+      "name": "Sticky Note7"
+    },
+    {
+      "parameters": {
+        "operationMode": "documentLoader",
+        "options": {
+          "summarizationMethodAndPrompts": {
+            "values": {
+              "summarizationMethod": "stuff",
+              "prompt": "=Capture a concise summary of the newsletter in bullet point format.\nMaintain information on product names, company names and original URLs by enforcing these rules for every bullet point:\n- maintain names of companies and products as in the original text.\n- include minimum one link with the URL to the original source for this information. If you cannot find any such URL for the item, specify \"[NO LINK FOUND]“. Do not invent any URL yourself that is not in the original text.\n- Delete bullet points that contain obvious advertising or that reference the newsletter itself, e.g. explaining how to unsubscribe from the newsletter.#\nPerform these tasks on the following newsletter text:\n„{{ $json.textPlain }}“"
+            }
+          }
+        }
+      },
+      "id": "921780ab-94fd-4eab-aa75-962757deefa1",
+      "name": "Summarization Chain STUFF",
+      "type": "@n8n/n8n-nodes-langchain.chainSummarization",
+      "typeVersion": 2,
+      "position": [
+        640,
+        580
+      ]
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Recursive Character Text Splitter": {
+      "ai_textSplitter": [
+        [
+          {
+            "node": "Default Data Loader",
+            "type": "ai_textSplitter",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model1": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Summarization Chain STUFF",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Default Data Loader": {
+      "ai_document": [
+        [
+          {
+            "node": "Summarization Chain STUFF",
+            "type": "ai_document",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Splits text in small chuncks": {
+      "main": [
+        [
+          {
+            "node": "IF2_BlockSwitcher",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge1": {
+      "main": [
+        [
+          {
+            "node": "Adds additional blocks",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "Merge1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Creates the page and adds the first part of text": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "IF2_BlockSwitcher": {
+      "main": [
+        [
+          {
+            "node": "Creates the page and adds the first part of text",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Merge1",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "IF1_SizeChecker": {
+      "main": [
+        [
+          {
+            "node": "Splits text in small chuncks",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Notion",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If_DATE_FILTER": {
+      "main": [
+        [
+          {
+            "node": "If_SOURCE_FILTER",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "UNSEEN_IMAP_EMAILS": {
+      "main": [
+        [
+          {
+            "node": "If_DATE_FILTER",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If_SOURCE_FILTER": {
+      "main": [
+        [
+          {
+            "node": "Summarization Chain STUFF",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Summarization Chain STUFF": {
+      "main": [
+        [
+          {
+            "node": "IF1_SizeChecker",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "5b3ff9b1-f6a3-430f-bcc4-8dcea47d0ff3",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "558d88703fb65b2d0e44613bc35916258b0f0bf983c5d4730c00c424b77ca36a"
+  },
+  "id": "xTqkTZs2BDaZtXn3",
+  "tags": []
+}

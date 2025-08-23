@@ -1,0 +1,10 @@
+#requirements.txt
+sentence-transformers
+chromadb
+requests
+pyreadline3; platform_system == "Windows"
+cryptography>=42.0.0
+pyOpenSSL>=24.0.0
+aiogram>=3.4.1
+numpy
+

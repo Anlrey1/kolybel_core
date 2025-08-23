@@ -1,0 +1,936 @@
+{
+  "name": "Basic Content Creator Multi-Agent",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "hours",
+              "hoursInterval": "={{Math.floor(Math.random() * 5) + 1}}",
+              "triggerAtMinute": "={{Math.floor(Math.random() * 59) + 1}}"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        -540,
+        240
+      ],
+      "id": "ffc1f50c-3bac-422d-8a89-fdcc9b059d14",
+      "name": "Schedule Trigger"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1,
+      "position": [
+        20,
+        180
+      ],
+      "id": "a9eb1f67-580c-4b4d-9e2c-238eaa2ecbb8",
+      "name": "OpenAI Chat Model",
+      "credentials": {
+        "openAiApi": {
+          "id": "{{openAiApi_id}}",
+          "name": "{{openAiApi_name}}"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1,
+      "position": [
+        20,
+        720
+      ],
+      "id": "94e1f93b-d77f-4629-81a9-426f29fdbd8c",
+      "name": "OpenAI Chat Model1",
+      "credentials": {
+        "openAiApi": {
+          "id": "{{openAiApi_id}}",
+          "name": "{{openAiApi_name}}"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "{{google_sheet_id}}",
+          "mode": "list",
+          "cachedResultName": "{{sheet_name}}",
+          "cachedResultUrl": "{{google_sheet_url}}"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "{{google_sheet_id}}",
+          "mode": "list",
+          "cachedResultName": "{{sheet_name}}",
+          "cachedResultUrl": "{{google_sheet_url}}"
+        },
+        "filtersUI": {
+          "values": [
+            {
+              "lookupColumn": "Status",
+              "lookupValue": "Next"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "position": [
+        -280,
+        520
+      ],
+      "id": "319a4538-0a9c-4422-bd22-9b07c7a4ae89",
+      "name": "Get Active Idea Row-LinkedIn",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "{{googleSheetsOAuth2Api_id}}",
+          "name": "{{googleSheetsOAuth2Api_name}}"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "{{google_sheet_id}}",
+          "mode": "list",
+          "cachedResultName": "{{sheet_name}}",
+          "cachedResultUrl": "{{google_sheet_url}}"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "{{google_sheet_id}}",
+          "mode": "list",
+          "cachedResultName": "{{sheet_name}}",
+          "cachedResultUrl": "{{google_sheet_url}}"
+        },
+        "filtersUI": {
+          "values": [
+            {
+              "lookupColumn": "Status",
+              "lookupValue": "Next"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "position": [
+        -280,
+        -20
+      ],
+      "id": "aa49cf6e-374a-4157-bf12-2656748c6396",
+      "name": "Get Active Idea Row-X Content",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "{{googleSheetsOAuth2Api_id}}",
+          "name": "{{googleSheetsOAuth2Api_name}}"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "dbf0ca01-f35e-4b26-9144-ade955768ace",
+              "name": "Content Idea",
+              "value": "={{ $json['Content Idea'] }}",
+              "type": "string"
+            },
+            {
+              "id": "511c43d3-1459-46c1-8ea2-7721a84b43d1",
+              "name": "Content Theme",
+              "value": "={{ $json['Content Theme'] }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -80,
+        -20
+      ],
+      "id": "73fe5416-fada-4bfe-bfe9-423ce4dd2e3f",
+      "name": "Set Input Data-XPost"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "dbf0ca01-f35e-4b26-9144-ade955768ace",
+              "name": "Content Idea",
+              "value": "={{ $json['Content Idea'] }}",
+              "type": "string"
+            },
+            {
+              "id": "511c43d3-1459-46c1-8ea2-7721a84b43d1",
+              "name": "Content Theme",
+              "value": "={{ $json['Content Theme'] }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -80,
+        520
+      ],
+      "id": "5f14986f-67d1-4f24-aa9f-61fd41f23f17",
+      "name": "Set Input Data-LinkedIn"
+    },
+    {
+      "parameters": {
+        "person": "sVSO1Veo0N",
+        "text": "={{ $('Final Content1').item.json.output }}",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.linkedIn",
+      "typeVersion": 1,
+      "position": [
+        1220,
+        620
+      ],
+      "id": "68a7955e-ff64-4ad6-bbfb-52129d9e8076",
+      "name": "LinkedIn",
+      "credentials": {
+        "linkedInOAuth2Api": {
+          "id": "{{linkedInOAuth2Api_id}}",
+          "name": "{{linkedInOAuth2Api_name}}"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentId": {
+          "__rl": true,
+          "value": "{{google_sheet_id}}",
+          "mode": "list",
+          "cachedResultName": "{{sheet_name}}",
+          "cachedResultUrl": "{{google_sheet_url}}"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "{{google_sheet_id}}",
+          "mode": "list",
+          "cachedResultName": "{{sheet_name}}",
+          "cachedResultUrl": "{{google_sheet_url}}"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "row_number": "={{ $('Get Active Idea Row-X Content').item.json.row_number + 1 }}",
+            "Status": "Next"
+          },
+          "matchingColumns": [
+            "row_number"
+          ],
+          "schema": [
+            {
+              "id": "Content Idea",
+              "displayName": "Content Idea",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Content Theme",
+              "displayName": "Content Theme",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "AI Generated Content",
+              "displayName": "AI Generated Content",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Remarks",
+              "displayName": "Remarks",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Status",
+              "displayName": "Status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "row_number",
+              "displayName": "row_number",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "readOnly": true,
+              "removed": false
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "position": [
+        980,
+        -160
+      ],
+      "id": "9b1505b7-6d2e-4e4f-ad5b-f4012a0e7150",
+      "name": "Update Next Row Status",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "{{googleSheetsOAuth2Api_id}}",
+          "name": "{{googleSheetsOAuth2Api_name}}"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentId": {
+          "__rl": true,
+          "value": "{{google_sheet_id}}",
+          "mode": "list",
+          "cachedResultName": "{{sheet_name}}",
+          "cachedResultUrl": "{{google_sheet_url}}"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "{{google_sheet_id}}",
+          "mode": "list",
+          "cachedResultName": "{{sheet_name}}",
+          "cachedResultUrl": "{{google_sheet_url}}"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "row_number": "={{ $('Get Active Idea Row-X Content').item.json.row_number }}",
+            "AI Generated Content": "={{ $json.output }}",
+            "Status": "Completed"
+          },
+          "matchingColumns": [
+            "row_number"
+          ],
+          "schema": [
+            {
+              "id": "Content Idea",
+              "displayName": "Content Idea",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Content Theme",
+              "displayName": "Content Theme",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "AI Generated Content",
+              "displayName": "AI Generated Content",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Remarks",
+              "displayName": "Remarks",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Status",
+              "displayName": "Status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "row_number",
+              "displayName": "row_number",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "readOnly": true,
+              "removed": false
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "position": [
+        980,
+        60
+      ],
+      "id": "b43776b3-4136-4fee-a264-fa4ee81c19be",
+      "name": "Update Active Row Status",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "{{googleSheetsOAuth2Api_id}}",
+          "name": "{{googleSheetsOAuth2Api_name}}"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentId": {
+          "__rl": true,
+          "value": "{{google_sheet_id}}",
+          "mode": "list",
+          "cachedResultName": "{{sheet_name}}",
+          "cachedResultUrl": "{{google_sheet_url}}"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "{{google_sheet_id}}",
+          "mode": "list",
+          "cachedResultName": "{{sheet_name}}",
+          "cachedResultUrl": "{{google_sheet_url}}"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Status": "Next",
+            "row_number": "={{ $('Get Active Idea Row-LinkedIn').item.json.row_number + 1 }}"
+          },
+          "matchingColumns": [
+            "row_number"
+          ],
+          "schema": [
+            {
+              "id": "Content Idea",
+              "displayName": "Content Idea",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Content Theme",
+              "displayName": "Content Theme",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "AI Generated Content",
+              "displayName": "AI Generated Content",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Status",
+              "displayName": "Status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "row_number",
+              "displayName": "row_number",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "readOnly": true,
+              "removed": false
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "position": [
+        960,
+        400
+      ],
+      "id": "a1a844a7-1326-4d2f-a799-27ed2ca4d102",
+      "name": "Update Next Row Stat-LinkedIn",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "{{googleSheetsOAuth2Api_id}}",
+          "name": "{{googleSheetsOAuth2Api_name}}"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentId": {
+          "__rl": true,
+          "value": "{{google_sheet_id}}",
+          "mode": "list",
+          "cachedResultName": "{{sheet_name}}",
+          "cachedResultUrl": "{{google_sheet_url}}"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "{{google_sheet_id}}",
+          "mode": "list",
+          "cachedResultName": "{{sheet_name}}",
+          "cachedResultUrl": "{{google_sheet_url}}"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "row_number": "={{ $('Get Active Idea Row-LinkedIn').item.json.row_number }}",
+            "AI Generated Content": "={{ $json.output }}",
+            "Status": "Completed"
+          },
+          "matchingColumns": [
+            "row_number"
+          ],
+          "schema": [
+            {
+              "id": "Content Idea",
+              "displayName": "Content Idea",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Content Theme",
+              "displayName": "Content Theme",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "AI Generated Content",
+              "displayName": "AI Generated Content",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Remarks",
+              "displayName": "Remarks",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Status",
+              "displayName": "Status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "row_number",
+              "displayName": "row_number",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "readOnly": true,
+              "removed": false
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "position": [
+        960,
+        620
+      ],
+      "id": "94056aaf-bece-4bdc-b27f-c76c978a60ac",
+      "name": "Update Active Row Stat-LinkedIn",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "{{googleSheetsOAuth2Api_id}}",
+          "name": "{{googleSheetsOAuth2Api_name}}"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "9e1158d9-4355-4802-8eaa-07d5a3c87aa8",
+              "name": "output",
+              "value": "={{ $json.output }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "b29d1d4d-00f8-4677-8427-9e8167ad6352",
+      "name": "Final Content",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        500,
+        -20
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "9e1158d9-4355-4802-8eaa-07d5a3c87aa8",
+              "name": "output",
+              "value": "={{ $json.output }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "a125f945-48f2-4fe0-afd3-a282504da7f2",
+      "name": "Final Content1",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        500,
+        520
+      ]
+    },
+    {
+      "parameters": {
+        "text": "={{ $('Final Content').item.json.output }}",
+        "additionalFields": {}
+      },
+      "id": "e30d1821-3661-4564-be32-cb974dbeaa16",
+      "name": "X",
+      "type": "n8n-nodes-base.twitter",
+      "typeVersion": 2,
+      "position": [
+        1200,
+        60
+      ],
+      "credentials": {
+        "twitterOAuth2Api": {
+          "id": "{{twitterOAuth2Api_id}}",
+          "name": "{{twitterOAuth2Api_name}}"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "agent": "conversationalAgent",
+        "promptType": "define",
+        "text": "=You are an expert content creator and social media strategist skilled in crafting engaging, concise, and impactful Twitter posts. Your task is to create a single, high-quality tweet based on the input content idea provided.\n\n- Make the tweet compelling and follow the guiding principles based on your system prompt.\n- Incorporate a clear call-to-action or thought-provoking element when appropriate.\n- Ensure the tone matches a professional yet approachable audience.\n- Avoid filler words and maintain clarity.\n- As much as possible, avoid using unnecessary emojis\n- Do not use hastags ever.\n\nHere is the content idea: \"{{ $json['Content Idea'] }}\"\n\nHere is the content Theme: \"{{ $json['Content Theme'] }}\"\n\nGenerate the tweet based on this idea and theme.\n",
+        "options": {
+          "systemMessage": "=You are an AI agent focused on crafting engaging, concise, and impactful Twitter content. Your writing is informed by the principles of thought leaders like Dan Koe, but your primary focus is on applying best practices for clarity, value, and audience engagement. Your content should be original, actionable, and relatable. \n\n---\n\n**Writing Principles:**  \n\n1. **Clarity and Simplicity:**  \n   - Write in clear, concise language that is easy to understand.  \n   - Avoid unnecessary jargon or overly complex phrasing.  \n\n2. **Value-Driven Content:**  \n   - Focus on providing actionable insights, encouraging self-reflection, or offering practical advice.  \n   - Ensure every tweet delivers immediate value, whether through inspiration, education, or entertainment.  \n\n3. **Relatable and Contextual:**  \n   - Use real-world examples, universal truths, or relatable metaphors to make your content accessible.  \n   - Write with an empathetic tone that resonates with your target audience.  \n\n4. **Brevity with Impact:**  \n   - Use short, punchy sentences or bullet points that are easy to skim.  \n   - Ensure every word contributes meaning and depth.  \n\n5. **Action-Oriented Language:**  \n   - Use imperatives, challenges, or thought-provoking questions to inspire your audience to act or reflect.  \n\n6. **Creative, Original Thought:**  \n   - Avoid mimicking specific individuals. Instead, draw inspiration from broader best practices in personal development, productivity, and entrepreneurship.  \n   - Infuse tweets with fresh perspectives and unique takes on common ideas.  \n\n7. **Audience-Centric Approach:**  \n   - Write with the audience’s needs, challenges, and aspirations in mind.  \n   - Spark conversation by inviting responses or feedback.  \n\n8. **Sample Hook Structure to use:**  \n   - The Intriguing Question\n\"A thought-provoking question that resonates with your audience? The answer.\"\n\n   - The Bold Statement\n\"Hard pill to swallow: [Make a strong claim that sparks curiosity or controversy].\"\n\n   - The Metaphor or Analogy\nDraw comparisons between unrelated things to engage readers.\n\"[X] is a [superpower].\"\n\n   - The Teaser\n\"I just read about a study I can’t stop thinking about... According to [notable figure/institution]...\"\n\n   - The Shocking Statistic\n\"[Unexpected statement]. [Surprising data makes people pause and want to learn more.] Here are the top X examples.\"\n\n   - The Relatable Anecdote\n\"I’m [age]. When I was young, I wasted years on negative habits #1, #2, and #3. Learn from my mistakes.\"\n\n   - The Quotation\n\"[Notable Figure] once said: [Use a powerful quote that ties into your content...]\nBut most people don’t know how to...\"\n\n   - The Promise\n\"This took me X years to learn, I’ll teach it to you in 5 minutes. How to achieve impressive outcome in 2024. [Valuable insights].\" \n\n---\n\n**Content Themes:**  \n   - **Personal Growth:** Mindset, self-discipline, and overcoming challenges.  \n   - **Productivity:** Practical strategies, time management, and habit-building.  \n   - **Entrepreneurship:** Building skills, monetizing ideas, and scaling income.  \n   - **Philosophy and Reflection:** Simplifying complex ideas, exploring purpose, and finding balance.  \n\n**Examples of Tweet Styles:**  \n\n1. **Thought-Provoking Statements:**  \n   - \"Your biggest obstacle isn’t time. It’s focus.\"  \n\n2. **Lists and Action Steps:**  \n   - \"Struggling to focus? Try this:  \n     1. Start your day with 10 minutes of silence.  \n     2. Write down your top priority.  \n     3. Ignore everything else until it’s done.\"  \n\n3. **Threads for Depth:**  \n   - \"Feeling overwhelmed by your goals? Break them down with this 4-step process 🧵:  \n     1. Define the outcome... (expand).\"  \n\n4. **Fresh Takes:**  \n   - \"Success doesn’t come from doing more. It comes from doing less—but better.\"  \n\n---\n\n**Creative Guidelines:**  \n   - Use storytelling, questions, or analogies to keep your audience engaged.  \n   - Experiment with tone, format, and delivery to discover what resonates most with your audience."
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1.7,
+      "position": [
+        120,
+        -20
+      ],
+      "id": "39459529-d016-4639-bf97-47b856e75cca",
+      "name": "X Content Creator Agent"
+    },
+    {
+      "parameters": {
+        "agent": "conversationalAgent",
+        "promptType": "define",
+        "text": "=You are an expert content creator and social media strategist skilled in crafting engaging, concise, and impactful LinkedIn posts. Your task is to create a single, high-quality LinkedIn post based on the input content idea and the content theme provided.\n\n- Make the LinkedIn post compelling and follow the guiding principles based on your system prompt.\n- Incorporate a clear call-to-action or thought-provoking element when appropriate.\n- Ensure the tone matches a professional, business-oriented,  yet approachable audience.\n- Avoid filler words and maintain clarity.\n- As much as possible, avoid using unnecessary emojis\n- Use hastags when necessary.\n- Avoid at all cost using \"**\" in any of the content you will output. When making bulleted lists to make a point use \"-\" or a bullet point instead.\n\nHere is the content idea: \"{{ $json['Content Idea'] }}\"\n\nHere is the content Theme: \"{{ $json['Content Theme'] }}\"\n\nGenerate the LinkedIn post based on this idea and theme.\n",
+        "options": {
+          "systemMessage": "=You are an AI agent focused on creating engaging, thoughtful, and impactful LinkedIn content. Your writing draws inspiration from thought leaders like Dan Koe while applying best practices for clarity, value, and audience engagement. Your posts should be original, actionable, and resonate with professionals and personal development enthusiasts.  \n\n- Avoid formatting like \"**bold**.\" Instead, use clean, professional formatting with headings, bullet points, or short paragraphs for clarity.  \n\n**Writing Principles:**  \n\n1. **Clarity and Simplicity:**  \n   - Write in clear, concise language that professionals can easily understand.  \n   - Avoid overly technical jargon or unnecessarily complex phrasing.  \n\n2. **Value-Driven Content:**  \n   - Focus on providing actionable insights, thought-provoking reflections, or practical strategies.  \n   - Ensure every post offers immediate value—whether it’s educational, inspirational, or empowering.  \n\n3. **Relatable and Contextual:**  \n   - Use relatable scenarios, universal truths, or professional examples to make your content accessible.  \n   - Write with empathy, addressing your audience’s challenges and aspirations.  \n\n4. **Depth with Brevity:**  \n   - Keep your posts skimmable, using short paragraphs, bullet points, and headings.  \n   - Balance brevity with substance, ensuring each line contributes meaning and impact.  \n\n5. **Action-Oriented Language:**  \n   - Inspire your audience with imperatives, calls to action, or reflective questions.  \n   - Encourage interaction, such as sharing experiences, thoughts, or feedback.  \n\n6. **Creative and Original Thought:**  \n   - Avoid replicating the voice of specific individuals. Instead, offer fresh perspectives on professional growth, productivity, and leadership.  \n   - Infuse posts with unique insights and practical advice.  \n\n7. **Audience-Centric Approach:**  \n   - Write with a professional audience in mind, focusing on their goals, challenges, and interests.  \n   - Foster engagement by inviting meaningful discussions or sparking curiosity.  \n\n**Content Themes:**  \n   - **Personal Growth:** Self-discipline, overcoming challenges, and mindset shifts.  \n   - **Productivity:** Time management, focus strategies, and building habits.  \n   - **Entrepreneurship:** Innovation, scaling skills, and creating value.  \n   - **Philosophy and Reflection:** Exploring purpose, balance, and deeper insights.  \n\n**Examples of LinkedIn Post Styles:**  \n\n1. **Thought-Provoking Statements:**  \n   - \"Your biggest professional hurdle isn’t time—it’s clarity. Where are you really headed?\"  \n\n2. **Lists and Action Steps:**  \n   - \"If you’re struggling to manage your time, consider this:  \n     - Start each day with 10 minutes of reflection.  \n     - Identify the single most impactful task for the day.  \n     - Block out distractions and execute with focus.\"  \n\n3. **Storytelling with Insights:**  \n   - \"Three years ago, I was overwhelmed and unproductive. Here's what I did to turn things around:  \n     - Replaced multitasking with deep focus.  \n     - Focused on one habit at a time.  \n     - Said 'no' more often.  \n   Small changes lead to big outcomes.\"  \n\n4. **Fresh Perspectives:**  \n   - \"Professional success isn’t about doing more. It’s about doing fewer things—better.\"  \n\n**Creative Guidelines:**  \n   - Use storytelling, analogies, or questions to make your content engaging and memorable.  \n   - Experiment with formats—such as carousels, polls, or short-form essays—to find what resonates best with your LinkedIn audience.  "
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1.7,
+      "position": [
+        120,
+        520
+      ],
+      "id": "409cc229-6cbb-467e-950d-6b14b5459894",
+      "name": "LinkedIn Creator Agent"
+    }
+  ],
+  "pinData": {
+    "Get Active Idea Row-LinkedIn": [
+      {
+        "json": {
+          "row_number": 4,
+          "Content Idea": "Why every business, big or small, needs an AI strategy today.",
+          "Content Theme": "AI in Business",
+          "AI Generated Content": "",
+          "Status": "Next"
+        }
+      }
+    ],
+    "Get Active Idea Row-X Content": [
+      {
+        "json": {
+          "row_number": 3,
+          "Content Idea": "Why self-discipline is the ultimate freedom.",
+          "Content Theme": "Personal Growth (Mindset, Habits, Self-Discipline)",
+          "AI Generated Content": "",
+          "Status": "Next"
+        }
+      }
+    ]
+  },
+  "connections": {
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "Get Active Idea Row-LinkedIn",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Get Active Idea Row-X Content",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "X Content Creator Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model1": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "LinkedIn Creator Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Active Idea Row-LinkedIn": {
+      "main": [
+        [
+          {
+            "node": "Set Input Data-LinkedIn",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Active Idea Row-X Content": {
+      "main": [
+        [
+          {
+            "node": "Set Input Data-XPost",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set Input Data-XPost": {
+      "main": [
+        [
+          {
+            "node": "X Content Creator Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set Input Data-LinkedIn": {
+      "main": [
+        [
+          {
+            "node": "LinkedIn Creator Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update Active Row Status": {
+      "main": [
+        [
+          {
+            "node": "X",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update Active Row Stat-LinkedIn": {
+      "main": [
+        [
+          {
+            "node": "LinkedIn",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Final Content": {
+      "main": [
+        [
+          {
+            "node": "Update Next Row Status",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Update Active Row Status",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Final Content1": {
+      "main": [
+        [
+          {
+            "node": "Update Next Row Stat-LinkedIn",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Update Active Row Stat-LinkedIn",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "X Content Creator Agent": {
+      "main": [
+        [
+          {
+            "node": "Final Content",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "LinkedIn Creator Agent": {
+      "main": [
+        [
+          {
+            "node": "Final Content1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "d173b629-b58e-457e-a190-006bbc74315a",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "80dda94540258c8a9249877c5128f67d88ca1bcc72725380688b9a5c6a7a5d1f"
+  },
+  "id": "Kzbplzd85XK3a6rp",
+  "tags": []
+}

@@ -1,0 +1,374 @@
+{
+  "name": "Web Scraper-SERP API",
+  "nodes": [
+    {
+      "parameters": {},
+      "id": "{{id}}",
+      "name": "When clicking ‘Test workflow’",
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        -180,
+        -200
+      ]
+    },
+    {
+      "parameters": {
+        "documentId": "{{sheet_id}}",
+        "sheetName": "{{sheet_name}}",
+        "filtersUI": {
+          "values": [
+            {
+              "lookupColumn": "campaign_status",
+              "lookupValue": "Active"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "{{id}}",
+      "name": "Get Active Campaigns",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "position": [
+        20,
+        -200
+      ],
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "{{googleSheetsOAuth2Api_id}}",
+          "name": "{{googleSheetsOAuth2Api_name}}"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const items = $input.all();\nconst updatedItems = items.map(item => {\n    item.json[\"Start Page\"] = (item.json[\"start_page\"] || 0) + 10;\n    return item;\n});\nreturn updatedItems;\n"
+      },
+      "id": "{{id}}",
+      "name": "Increment Start Page1",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        240,
+        -200
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "{{id}}",
+              "name": "Search Field",
+              "value": "={{ $json.search_field }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "{{id}}",
+      "name": "Set Search Field",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        460,
+        -200
+      ]
+    },
+    {
+      "parameters": {
+        "url": "https://serpapi.com/search",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "engine",
+              "value": "google_maps"
+            },
+            {
+              "name": "q",
+              "value": "={{ $json['Search Field'] }}"
+            },
+            {
+              "name": "{{serp_api_key}}",
+              "value": "8adea042e0f1dda4f2d78f2185a0c220acdcabdec1742762a4c981f46ca2f111"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "{{id}}",
+      "name": "Google Maps SERP API Request",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        720,
+        -200
+      ]
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "results",
+        "options": {}
+      },
+      "id": "{{id}}",
+      "name": "Split Out1",
+      "type": "n8n-nodes-base.splitOut",
+      "typeVersion": 1,
+      "position": [
+        1700,
+        -200
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Access the incoming array of data from the variable local_results\nconst dataArray = $input.item.json.local_results;\n\n// Extract and clean the website and title properties from each object in the array\nconst results = dataArray\n  .map(item => { \n    // Check if the website property exists and is a string\n    const website = item.website && typeof item.website === 'string'\n      ? item.website.split('?')[0] // Remove query parameters\n        .replace(/\\/$/, '') // Remove the trailing slash\n      : null;\n\n    // Check if the title property exists\n    const company = item.title && typeof item.title === 'string' ? item.title : null;\n\n    // Only return the result if the website is valid (not null or empty)\n    if (website) {\n      return { website, company };\n    }\n\n    // Skip entries without a valid website\n    return null;\n  })\n  .filter(result => result !== null); // Remove any null values from the result\n\n// Output the cleaned results as an array of objects\nreturn {\n  results,\n};"
+      },
+      "id": "{{id}}",
+      "name": "Get Website and Company Name",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1220,
+        -200
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "{{id}}",
+              "name": "local_results",
+              "value": "={{ $json.local_results }}",
+              "type": "array"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "{{id}}",
+      "name": "Set Data Source",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        960,
+        -200
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": "{{sheet_id}}",
+        "sheetName": "{{sheet_name}}",
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "company_name": "={{ $json.company }}",
+            "website": "={{ $json.website }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "{{id}}",
+              "displayName": "company_name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "{{id}}",
+              "displayName": "website",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "{{id}}",
+      "name": "Record Company and Websites",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "position": [
+        2160,
+        -200
+      ],
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "{{googleSheetsOAuth2Api_id}}",
+          "name": "{{googleSheetsOAuth2Api_name}}"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "compare": "selectedFields",
+        "fieldsToCompare": "company",
+        "options": {}
+      },
+      "id": "{{id}}",
+      "name": "Remove Duplicates",
+      "type": "n8n-nodes-base.removeDuplicates",
+      "typeVersion": 2,
+      "position": [
+        1940,
+        -200
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "{{id}}",
+              "name": "results",
+              "value": "={{ $json.results }}",
+              "type": "array"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "{{id}}",
+      "name": "Edit Fields",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1440,
+        -200
+      ]
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When clicking ‘Test workflow’": {
+      "main": [
+        [
+          {
+            "node": "Get Active Campaigns",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Active Campaigns": {
+      "main": [
+        [
+          {
+            "node": "Increment Start Page1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Increment Start Page1": {
+      "main": [
+        [
+          {
+            "node": "Set Search Field",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set Search Field": {
+      "main": [
+        [
+          {
+            "node": "Google Maps SERP API Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Maps SERP API Request": {
+      "main": [
+        [
+          {
+            "node": "Set Data Source",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Website and Company Name": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set Data Source": {
+      "main": [
+        [
+          {
+            "node": "Get Website and Company Name",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Split Out1": {
+      "main": [
+        [
+          {
+            "node": "Remove Duplicates",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Remove Duplicates": {
+      "main": [
+        [
+          {
+            "node": "Record Company and Websites",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "Split Out1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "{{versionId}}",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "{{instanceId}}"
+  },
+  "id": "{{id}}",
+  "tags": []
+}
