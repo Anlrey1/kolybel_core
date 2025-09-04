@@ -137,6 +137,20 @@ def _repair_json_if_needed(text: str, model: str) -> str:
         return text
 
 # ===== Основные функции =====
+
+def generate_text_raw(prompt: str, model: Optional[str] = None, timeout: int = 60) -> str:
+    """Отправляет prompt как есть, без русских каркасов и пост-обработки."""
+    model_to_use = model or detect_model(prompt)
+    try:
+        r = _post_generate({"model": model_to_use, "prompt": prompt}, stream=False, timeout=timeout)
+        if r.status_code != 200:
+            logger.error(f"LLM RAW HTTP {r.status_code}: {r.text[:500]}")
+            return f"⚠️ Ошибка API модели: {r.text}"
+        return (r.json().get("response") or "").strip()
+    except Exception as e:
+        logger.error(f"Ошибка связи с LLM (RAW): {e}")
+        return "🔴 Нет соединения с ИИ"
+
 def ask_llm_with_context(prompt: str, model: Optional[str] = None) -> str:
     is_raw, clean = _strip_raw_prefix(prompt)
     model_to_use = model or detect_model(clean)

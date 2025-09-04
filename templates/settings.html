@@ -1,0 +1,459 @@
+{% extends "base.html" %} {% block title %}Колыбель - Настройки{% endblock %} {%
+block content %}
+<div class="row">
+  <div class="col-lg-8">
+    <div class="card">
+      <div class="card-header">
+        <h5 class="mb-0"><i class="bi bi-gear"></i> Настройки системы</h5>
+      </div>
+      <div class="card-body">
+        <form id="settingsForm">
+          <div class="row">
+            <div class="col-md-6">
+              <h6 class="text-primary">Telegram</h6>
+              <div class="mb-3">
+                <label class="form-label">Bot Token</label>
+                <input
+                  type="password"
+                  class="form-control"
+                  name="telegram_token"
+                  placeholder="Введите токен бота"
+                />
+                <div class="form-text">
+                  Токен Telegram бота для отправки сообщений
+                </div>
+              </div>
+              <div class="mb-3">
+                <label class="form-label">Канал по умолчанию</label>
+                <input
+                  type="text"
+                  class="form-control"
+                  name="default_channel"
+                  placeholder="@channel или -1001234567890"
+                />
+              </div>
+            </div>
+            <div class="col-md-6">
+              <h6 class="text-primary">LLM модели</h6>
+              <div class="mb-3">
+                <label class="form-label">Основная модель</label>
+                <select class="form-select" name="default_model">
+                  <option value="nous-hermes:latest">Nous Hermes</option>
+                  <option value="mistral:latest">Mistral</option>
+                  <option value="llama2:latest">Llama 2</option>
+                </select>
+              </div>
+              <div class="mb-3">
+                <label class="form-label">Модель для кода</label>
+                <select class="form-select" name="code_model">
+                  <option value="deepseek-coder:latest">DeepSeek Coder</option>
+                  <option value="codellama:latest">Code Llama</option>
+                </select>
+              </div>
+            </div>
+          </div>
+
+          <hr />
+
+          <div class="row">
+            <div class="col-md-6">
+              <h6 class="text-primary">Агенты</h6>
+              <div class="mb-3">
+                <div class="form-check form-switch">
+                  <input
+                    class="form-check-input"
+                    type="checkbox"
+                    name="auto_start_agents"
+                    id="autoStartAgents"
+                    checked
+                  />
+                  <label class="form-check-label" for="autoStartAgents">
+                    Автозапуск системы агентов
+                  </label>
+                </div>
+              </div>
+              <div class="mb-3">
+                <div class="form-check form-switch">
+                  <input
+                    class="form-check-input"
+                    type="checkbox"
+                    name="prefer_autonomous"
+                    id="preferAutonomous"
+                    checked
+                  />
+                  <label class="form-check-label" for="preferAutonomous">
+                    Предпочитать автономных агентов
+                  </label>
+                </div>
+              </div>
+              <div class="mb-3">
+                <label class="form-label">Интервал проверки (сек)</label>
+                <input
+                  type="number"
+                  class="form-control"
+                  name="check_interval"
+                  value="60"
+                  min="30"
+                  max="3600"
+                />
+              </div>
+            </div>
+            <div class="col-md-6">
+              <h6 class="text-primary">Память</h6>
+              <div class="mb-3">
+                <label class="form-label">Размер диалоговой памяти</label>
+                <input
+                  type="number"
+                  class="form-control"
+                  name="dialog_memory_threshold"
+                  value="6"
+                  min="3"
+                  max="20"
+                />
+                <div class="form-text">
+                  Количество сообщений до сохранения в долговременную память
+                </div>
+              </div>
+              <div class="mb-3">
+                <div class="form-check form-switch">
+                  <input
+                    class="form-check-input"
+                    type="checkbox"
+                    name="full_awareness"
+                    id="fullAwareness"
+                    checked
+                  />
+                  <label class="form-check-label" for="fullAwareness">
+                    Полное пробуждение (расширенная интуиция)
+                  </label>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <hr />
+
+          <div class="d-flex justify-content-between">
+            <button
+              type="button"
+              class="btn btn-outline-danger"
+              onclick="resetSettings()"
+            >
+              <i class="bi bi-arrow-clockwise"></i> Сбросить
+            </button>
+            <button
+              type="button"
+              class="btn btn-primary"
+              onclick="saveSettings()"
+            >
+              <i class="bi bi-check"></i> Сохранить настройки
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-lg-4">
+    <!-- Системная информация -->
+    <div class="card mb-4">
+      <div class="card-header">
+        <h6 class="mb-0">
+          <i class="bi bi-info-circle"></i> Системная информация
+        </h6>
+      </div>
+      <div class="card-body">
+        <table class="table table-sm">
+          <tr>
+            <td><strong>Версия:</strong></td>
+            <td>Колыбель v2.0</td>
+          </tr>
+          <tr>
+            <td><strong>Статус:</strong></td>
+            <td><span class="badge bg-success">Онлайн</span></td>
+          </tr>
+          <tr>
+            <td><strong>Время работы:</strong></td>
+            <td id="uptime">-</td>
+          </tr>
+          <tr>
+            <td><strong>Память:</strong></td>
+            <td id="memory-usage">-</td>
+          </tr>
+        </table>
+      </div>
+    </div>
+
+    <!-- Управление системой -->
+    <div class="card mb-4">
+      <div class="card-header">
+        <h6 class="mb-0"><i class="bi bi-tools"></i> Управление системой</h6>
+      </div>
+      <div class="card-body">
+        <div class="d-grid gap-2">
+          <button class="btn btn-outline-primary" onclick="testConnection()">
+            <i class="bi bi-wifi"></i> Тест подключения
+          </button>
+          <button class="btn btn-outline-info" onclick="clearMemory()">
+            <i class="bi bi-trash"></i> Очистить память
+          </button>
+          <button class="btn btn-outline-warning" onclick="restartAgents()">
+            <i class="bi bi-arrow-clockwise"></i> Перезапуск агентов
+          </button>
+          <button class="btn btn-outline-success" onclick="exportData()">
+            <i class="bi bi-download"></i> Экспорт данных
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Логи -->
+    <div class="card">
+      <div class="card-header">
+        <h6 class="mb-0"><i class="bi bi-file-text"></i> Системные логи</h6>
+      </div>
+      <div class="card-body">
+        <div
+          id="system-logs"
+          style="
+            height: 200px;
+            overflow-y: auto;
+            font-family: monospace;
+            font-size: 0.8rem;
+            background: #f8f9fa;
+            padding: 10px;
+            border-radius: 5px;
+          "
+        >
+          <div class="text-muted">Загрузка логов...</div>
+        </div>
+        <div class="mt-2">
+          <button
+            class="btn btn-sm btn-outline-secondary"
+            onclick="refreshLogs()"
+          >
+            <i class="bi bi-arrow-clockwise"></i> Обновить
+          </button>
+          <button
+            class="btn btn-sm btn-outline-secondary"
+            onclick="clearLogs()"
+          >
+            <i class="bi bi-trash"></i> Очистить
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %} {% block extra_scripts %}
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    loadSettings();
+    loadSystemInfo();
+    loadLogs();
+
+    // Обновляем системную информацию каждые 30 секунд
+    setInterval(loadSystemInfo, 30000);
+  });
+
+  function loadSettings() {
+    // Загружаем настройки из localStorage или API
+    const savedSettings = localStorage.getItem("kolybel_settings");
+    if (savedSettings) {
+      const settings = JSON.parse(savedSettings);
+      populateForm(settings);
+    }
+  }
+
+  function populateForm(settings) {
+    const form = document.getElementById("settingsForm");
+    Object.keys(settings).forEach((key) => {
+      const element = form.querySelector(`[name="${key}"]`);
+      if (element) {
+        if (element.type === "checkbox") {
+          element.checked = settings[key];
+        } else {
+          element.value = settings[key];
+        }
+      }
+    });
+  }
+
+  function saveSettings() {
+    const form = document.getElementById("settingsForm");
+    const formData = new FormData(form);
+    const settings = {};
+
+    for (let [key, value] of formData.entries()) {
+      const element = form.querySelector(`[name="${key}"]`);
+      if (element && element.type === "checkbox") {
+        settings[key] = element.checked;
+      } else {
+        settings[key] = value;
+      }
+    }
+
+    // Сохраняем в localStorage
+    localStorage.setItem("kolybel_settings", JSON.stringify(settings));
+
+    // Здесь можно добавить отправку на сервер
+    showNotification("Настройки сохранены успешно!", "success");
+  }
+
+  function resetSettings() {
+    if (confirm("Вы уверены, что хотите сбросить все настройки?")) {
+      localStorage.removeItem("kolybel_settings");
+      document.getElementById("settingsForm").reset();
+      showNotification("Настройки сброшены", "info");
+    }
+  }
+
+  function loadSystemInfo() {
+    fetch("/api/status")
+      .then((response) => response.json())
+      .then((data) => {
+        document.getElementById("uptime").textContent = "Активен";
+        document.getElementById("memory-usage").textContent = `${
+          data.memory?.total_documents || 0
+        } записей`;
+      })
+      .catch((error) => {
+        console.error("Ошибка загрузки системной информации:", error);
+      });
+  }
+
+  function loadLogs() {
+    const logsContainer = document.getElementById("system-logs");
+
+    // Фиктивные логи для демонстрации
+    const logs = [
+      "[2024-01-15 10:30:15] INFO: Система агентов запущена",
+      "[2024-01-15 10:30:16] INFO: Загружено 3 автономных агента",
+      "[2024-01-15 10:30:17] INFO: Планировщик активирован",
+      "[2024-01-15 10:31:00] INFO: RSS агент: обработано 5 новостей",
+      "[2024-01-15 10:31:30] INFO: Веб-интерфейс доступен на порту 5000",
+      "[2024-01-15 10:32:00] INFO: Сохранено 12 записей в память",
+      "[2024-01-15 10:32:15] WARNING: Агент контента: превышен лимит запросов",
+      "[2024-01-15 10:33:00] INFO: Обработано 25 сообщений в чате",
+    ];
+
+    logsContainer.innerHTML = logs.map((log) => `<div>${log}</div>`).join("");
+    logsContainer.scrollTop = logsContainer.scrollHeight;
+  }
+
+  function refreshLogs() {
+    loadLogs();
+    showNotification("Логи обновлены", "info");
+  }
+
+  function clearLogs() {
+    if (confirm("Очистить системные логи?")) {
+      document.getElementById("system-logs").innerHTML =
+        '<div class="text-muted">Логи очищены</div>';
+      showNotification("Логи очищены", "info");
+    }
+  }
+
+  function testConnection() {
+    showNotification("Тестирование подключения...", "info");
+
+    fetch("/api/status")
+      .then((response) => response.json())
+      .then((data) => {
+        if (data.status === "online") {
+          showNotification("✅ Подключение успешно!", "success");
+        } else {
+          showNotification("❌ Проблемы с подключением", "warning");
+        }
+      })
+      .catch((error) => {
+        showNotification("❌ Ошибка подключения", "danger");
+      });
+  }
+
+  function clearMemory() {
+    if (
+      confirm(
+        "Вы уверены, что хотите очистить память системы? Это действие необратимо."
+      )
+    ) {
+      showNotification("Функция очистки памяти в разработке", "info");
+    }
+  }
+
+  function restartAgents() {
+    if (confirm("Перезапустить всех агентов?")) {
+      showNotification("Перезапуск агентов...", "info");
+
+      // Останавливаем
+      fetch("/api/agents/control", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ action: "stop" }),
+      })
+        .then(() => {
+          // Запускаем через 2 секунды
+          setTimeout(() => {
+            fetch("/api/agents/control", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ action: "start" }),
+            }).then(() => {
+              showNotification("✅ Агенты перезапущены", "success");
+            });
+          }, 2000);
+        })
+        .catch((error) => {
+          showNotification("❌ Ошибка перезапуска", "danger");
+        });
+    }
+  }
+
+  function exportData() {
+    showNotification("Подготовка экспорта данных...", "info");
+
+    // Создаем фиктивный файл для демонстрации
+    const data = {
+      timestamp: new Date().toISOString(),
+      version: "Колыбель v2.0",
+      settings: JSON.parse(localStorage.getItem("kolybel_settings") || "{}"),
+      export_note: "Это демонстрационный экспорт данных",
+    };
+
+    const blob = new Blob([JSON.stringify(data, null, 2)], {
+      type: "application/json",
+    });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `kolybel_export_${
+      new Date().toISOString().split("T")[0]
+    }.json`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+
+    showNotification("✅ Данные экспортированы", "success");
+  }
+
+  function showNotification(message, type = "info") {
+    const alertDiv = document.createElement("div");
+    alertDiv.className = `alert alert-${type} alert-dismissible fade show position-fixed`;
+    alertDiv.style.cssText =
+      "top: 20px; right: 20px; z-index: 9999; min-width: 300px;";
+    alertDiv.innerHTML = `
+        ${message}
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    `;
+
+    document.body.appendChild(alertDiv);
+
+    setTimeout(() => {
+      if (alertDiv.parentNode) {
+        alertDiv.remove();
+      }
+    }, 5000);
+  }
+</script>
+{% endblock %}

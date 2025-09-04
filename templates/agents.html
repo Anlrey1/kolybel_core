@@ -1,0 +1,679 @@
+{% extends "base.html" %} {% block title %}Колыбель - Управление агентами{%
+endblock %} {% block content %}
+<div class="row">
+  <div class="col-12">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+      <h2><i class="bi bi-robot"></i> Управление агентами</h2>
+      <div>
+        <button class="btn btn-success" onclick="startAgentSystem()">
+          <i class="bi bi-play"></i> Запустить систему
+        </button>
+        <button class="btn btn-warning" onclick="stopAgentSystem()">
+          <i class="bi bi-stop"></i> Остановить систему
+        </button>
+        <button
+          class="btn btn-primary"
+          data-bs-toggle="modal"
+          data-bs-target="#createAgentModal"
+        >
+          <i class="bi bi-plus"></i> Создать агента
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Статистика системы -->
+<div class="row mb-4">
+  <div class="col-md-3">
+    <div class="card text-center">
+      <div class="card-body">
+        <i class="bi bi-robot display-6 text-primary"></i>
+        <h5 class="card-title mt-2">Всего агентов</h5>
+        <h3 class="text-primary" id="total-agents">-</h3>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-3">
+    <div class="card text-center">
+      <div class="card-body">
+        <i class="bi bi-play-circle display-6 text-success"></i>
+        <h5 class="card-title mt-2">Активных</h5>
+        <h3 class="text-success" id="active-agents">-</h3>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-3">
+    <div class="card text-center">
+      <div class="card-body">
+        <i class="bi bi-gear display-6 text-info"></i>
+        <h5 class="card-title mt-2">Автономных</h5>
+        <h3 class="text-info" id="autonomous-agents">-</h3>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-3">
+    <div class="card text-center">
+      <div class="card-body">
+        <i class="bi bi-clock display-6 text-warning"></i>
+        <h5 class="card-title mt-2">Планировщик</h5>
+        <h3 class="text-warning" id="scheduler-status">-</h3>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Список агентов -->
+<div class="row">
+  <div class="col-12">
+    <div class="card">
+      <div class="card-header">
+        <h5 class="mb-0"><i class="bi bi-list"></i> Список агентов</h5>
+      </div>
+      <div class="card-body">
+        <div id="agents-list">
+          <div class="text-center">
+            <div class="spinner-border" role="status">
+              <span class="visually-hidden">Загрузка...</span>
+            </div>
+            <p class="mt-2">Загрузка агентов...</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Модальное окно создания агента -->
+<div class="modal fade" id="createAgentModal" tabindex="-1">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">
+          <i class="bi bi-plus-circle"></i> Создать нового агента
+        </h5>
+        <button
+          type="button"
+          class="btn-close"
+          data-bs-dismiss="modal"
+        ></button>
+      </div>
+      <div class="modal-body">
+        <form id="createAgentForm">
+          <div class="row">
+            <div class="col-md-6">
+              <div class="mb-3">
+                <label class="form-label">Тип агента</label>
+                <select class="form-select" name="type" id="agentType" required>
+                  <option value="">Выберите тип</option>
+                  <option value="rss_monitor">RSS Монитор</option>
+                  <option value="content_generator">Генератор контента</option>
+                  <option value="channel_manager">Менеджер канала</option>
+                </select>
+                <div class="form-text">
+                  Выберите тип агента в зависимости от задач
+                </div>
+              </div>
+            </div>
+            <div class="col-md-6">
+              <div class="mb-3">
+                <label class="form-label">Telegram канал/чат</label>
+                <input
+                  type="text"
+                  class="form-control"
+                  name="chat_id"
+                  placeholder="@channel или -1001234567890"
+                  required
+                />
+                <div class="form-text">ID канала или чата для публикации</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- RSS Monitor специфичные поля -->
+          <div id="rssMonitorFields" style="display: none">
+            <div class="row">
+              <div class="col-md-8">
+                <div class="mb-3">
+                  <label class="form-label">RSS URL</label>
+                  <input
+                    type="url"
+                    class="form-control"
+                    name="rss_url"
+                    placeholder="https://example.com/rss"
+                  />
+                  <div class="form-text">
+                    Ссылка на RSS ленту для мониторинга
+                  </div>
+                </div>
+              </div>
+              <div class="col-md-4">
+                <div class="mb-3">
+                  <label class="form-label">Макс. постов</label>
+                  <input
+                    type="number"
+                    class="form-control"
+                    name="max_posts"
+                    value="3"
+                    min="1"
+                    max="10"
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Content Generator специфичные поля -->
+          <div id="contentGeneratorFields" style="display: none">
+            <div class="row">
+              <div class="col-md-6">
+                <div class="mb-3">
+                  <label class="form-label">Шаблон</label>
+                  <select
+                    class="form-select"
+                    name="template_id"
+                    id="templateSelect"
+                  >
+                    <option value="">Загрузка шаблонов...</option>
+                  </select>
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class="mb-3">
+                  <label class="form-label">Расписание</label>
+                  <select class="form-select" name="schedule">
+                    <option value="every 4 hours">Каждые 4 часа</option>
+                    <option value="every 6 hours">Каждые 6 часов</option>
+                    <option value="every 12 hours">Каждые 12 часов</option>
+                    <option value="0 9,15,21 * * *">
+                      3 раза в день (9:00, 15:00, 21:00)
+                    </option>
+                  </select>
+                </div>
+              </div>
+            </div>
+            <div class="mb-3">
+              <label class="form-label">Темы (через запятую)</label>
+              <textarea
+                class="form-control"
+                name="topics"
+                rows="2"
+                placeholder="искусственный интеллект, блокчейн, квантовые компьютеры"
+              ></textarea>
+              <div class="form-text">Список тем для генерации контента</div>
+            </div>
+          </div>
+
+          <!-- Channel Manager специфичные поля -->
+          <div id="channelManagerFields" style="display: none">
+            <div class="mb-3">
+              <label class="form-label">Действия</label>
+              <div class="form-check">
+                <input
+                  class="form-check-input"
+                  type="checkbox"
+                  name="actions"
+                  value="analytics"
+                  id="actionAnalytics"
+                  checked
+                />
+                <label class="form-check-label" for="actionAnalytics"
+                  >Аналитика канала</label
+                >
+              </div>
+              <div class="form-check">
+                <input
+                  class="form-check-input"
+                  type="checkbox"
+                  name="actions"
+                  value="engagement"
+                  id="actionEngagement"
+                  checked
+                />
+                <label class="form-check-label" for="actionEngagement"
+                  >Повышение вовлеченности</label
+                >
+              </div>
+              <div class="form-check">
+                <input
+                  class="form-check-input"
+                  type="checkbox"
+                  name="actions"
+                  value="moderation"
+                  id="actionModeration"
+                />
+                <label class="form-check-label" for="actionModeration"
+                  >Модерация контента</label
+                >
+              </div>
+            </div>
+          </div>
+
+          <!-- Общие поля -->
+          <div class="row">
+            <div class="col-md-8">
+              <div class="mb-3">
+                <label class="form-label">Стиль/Описание</label>
+                <input
+                  type="text"
+                  class="form-control"
+                  name="style"
+                  placeholder="информативный стиль для молодежи"
+                />
+                <div class="form-text">
+                  Стиль общения или дополнительное описание
+                </div>
+              </div>
+            </div>
+            <div class="col-md-4">
+              <div class="mb-3">
+                <label class="form-label">Платформа</label>
+                <select class="form-select" name="use_n8n">
+                  <option value="false">Автономный агент</option>
+                  <option value="true">N8N (если доступен)</option>
+                </select>
+              </div>
+            </div>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+          Отмена
+        </button>
+        <button type="button" class="btn btn-primary" onclick="createAgent()">
+          <i class="bi bi-plus"></i> Создать агента
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Модальное окно деталей агента -->
+<div class="modal fade" id="agentDetailsModal" tabindex="-1">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">
+          <i class="bi bi-info-circle"></i> Детали агента
+        </h5>
+        <button
+          type="button"
+          class="btn-close"
+          data-bs-dismiss="modal"
+        ></button>
+      </div>
+      <div class="modal-body" id="agentDetailsContent">
+        <!-- Содержимое загружается динамически -->
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+          Закрыть
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %} {% block extra_scripts %}
+<script>
+  let agentsData = {};
+
+  // Загрузка данных при загрузке страницы
+  document.addEventListener("DOMContentLoaded", function () {
+    loadAgents();
+    loadTemplates();
+    setupFormHandlers();
+
+    // Обновляем данные каждые 30 секунд
+    setInterval(loadAgents, 30000);
+  });
+
+  function loadAgents() {
+    fetch("/api/agents")
+      .then((response) => response.json())
+      .then((data) => {
+        agentsData = data;
+        updateStatistics(data);
+        displayAgents(data);
+      })
+      .catch((error) => {
+        console.error("Ошибка загрузки агентов:", error);
+        document.getElementById("agents-list").innerHTML =
+          '<div class="alert alert-danger">Ошибка загрузки агентов</div>';
+      });
+  }
+
+  function updateStatistics(data) {
+    document.getElementById("total-agents").textContent =
+      data.total_agents || 0;
+    document.getElementById("active-agents").textContent = (
+      data.autonomous_agents || []
+    ).filter((a) => a.is_active).length;
+    document.getElementById("autonomous-agents").textContent =
+      data.autonomous_count || 0;
+    document.getElementById("scheduler-status").textContent =
+      data.scheduler_running ? "Работает" : "Остановлен";
+
+    // Обновляем цвета статуса
+    const schedulerElement = document.getElementById("scheduler-status");
+    schedulerElement.className = data.scheduler_running
+      ? "text-success"
+      : "text-danger";
+  }
+
+  function displayAgents(data) {
+    const agentsList = document.getElementById("agents-list");
+
+    if (!data.autonomous_agents || data.autonomous_agents.length === 0) {
+      agentsList.innerHTML = `
+            <div class="text-center py-4">
+                <i class="bi bi-robot display-1 text-muted"></i>
+                <h4 class="text-muted mt-3">Нет агентов</h4>
+                <p class="text-muted">Создайте первого агента для начала работы</p>
+                <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#createAgentModal">
+                    <i class="bi bi-plus"></i> Создать агента
+                </button>
+            </div>
+        `;
+      return;
+    }
+
+    let html = '<div class="row">';
+
+    data.autonomous_agents.forEach((agent) => {
+      const statusBadge = agent.is_active
+        ? '<span class="badge bg-success">Активен</span>'
+        : '<span class="badge bg-danger">Неактивен</span>';
+
+      const successRate = agent.success_rate || 0;
+      const progressColor =
+        successRate >= 80
+          ? "success"
+          : successRate >= 60
+          ? "warning"
+          : "danger";
+
+      const lastRun = agent.last_run
+        ? new Date(agent.last_run).toLocaleString()
+        : "Никогда";
+
+      html += `
+            <div class="col-md-6 col-lg-4 mb-3">
+                <div class="card h-100">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <h6 class="mb-0">${agent.name}</h6>
+                        ${statusBadge}
+                    </div>
+                    <div class="card-body">
+                        <p class="card-text">
+                            <strong>Тип:</strong> ${getAgentTypeLabel(
+                              agent.type
+                            )}<br>
+                            <strong>Успешность:</strong> ${successRate.toFixed(
+                              1
+                            )}%<br>
+                            <strong>Последний запуск:</strong> ${lastRun}
+                        </p>
+                        
+                        <div class="progress mb-3" style="height: 8px;">
+                            <div class="progress-bar bg-${progressColor}" 
+                                 style="width: ${successRate}%"></div>
+                        </div>
+                        
+                        <div class="d-flex justify-content-between">
+                            <small class="text-success">✓ ${
+                              agent.success_count || 0
+                            }</small>
+                            <small class="text-danger">✗ ${
+                              agent.error_count || 0
+                            }</small>
+                        </div>
+                    </div>
+                    <div class="card-footer">
+                        <div class="btn-group w-100" role="group">
+                            <button class="btn btn-sm btn-outline-info" onclick="showAgentDetails('${
+                              agent.id
+                            }')">
+                                <i class="bi bi-info"></i>
+                            </button>
+                            <button class="btn btn-sm btn-outline-primary" onclick="editAgent('${
+                              agent.id
+                            }')">
+                                <i class="bi bi-pencil"></i>
+                            </button>
+                            <button class="btn btn-sm btn-outline-danger" onclick="deleteAgent('${
+                              agent.id
+                            }')">
+                                <i class="bi bi-trash"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `;
+    });
+
+    html += "</div>";
+    agentsList.innerHTML = html;
+  }
+
+  function getAgentTypeLabel(type) {
+    const types = {
+      rss_monitor: "RSS Монитор",
+      content_generator: "Генератор контента",
+      channel_manager: "Менеджер канала",
+    };
+    return types[type] || type;
+  }
+
+  function loadTemplates() {
+    fetch("/api/templates")
+      .then((response) => response.json())
+      .then((data) => {
+        const templateSelect = document.getElementById("templateSelect");
+        templateSelect.innerHTML = '<option value="">Выберите шаблон</option>';
+
+        if (data.templates) {
+          data.templates.forEach((template) => {
+            templateSelect.innerHTML += `<option value="${template.id}">${template.title} (${template.theme})</option>`;
+          });
+        }
+      })
+      .catch((error) => {
+        console.error("Ошибка загрузки шаблонов:", error);
+      });
+  }
+
+  function setupFormHandlers() {
+    const agentTypeSelect = document.getElementById("agentType");
+
+    agentTypeSelect.addEventListener("change", function () {
+      // Скрываем все специфичные поля
+      document.getElementById("rssMonitorFields").style.display = "none";
+      document.getElementById("contentGeneratorFields").style.display = "none";
+      document.getElementById("channelManagerFields").style.display = "none";
+
+      // Показываем нужные поля
+      if (this.value === "rss_monitor") {
+        document.getElementById("rssMonitorFields").style.display = "block";
+      } else if (this.value === "content_generator") {
+        document.getElementById("contentGeneratorFields").style.display =
+          "block";
+      } else if (this.value === "channel_manager") {
+        document.getElementById("channelManagerFields").style.display = "block";
+      }
+    });
+  }
+
+  function createAgent() {
+    const form = document.getElementById("createAgentForm");
+    const formData = new FormData(form);
+    const data = {};
+
+    // Собираем данные формы
+    for (let [key, value] of formData.entries()) {
+      if (key === "actions") {
+        if (!data.actions) data.actions = [];
+        data.actions.push(value);
+      } else if (key === "topics") {
+        data.topics = value
+          .split(",")
+          .map((t) => t.trim())
+          .filter((t) => t);
+      } else if (key === "use_n8n") {
+        data.use_n8n = value === "true";
+      } else {
+        data[key] = value;
+      }
+    }
+
+    // Отправляем запрос
+    fetch("/api/agents", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(data),
+    })
+      .then((response) => response.json())
+      .then((result) => {
+        if (result.success) {
+          showNotification("Агент создан успешно!", "success");
+          bootstrap.Modal.getInstance(
+            document.getElementById("createAgentModal")
+          ).hide();
+          form.reset();
+          loadAgents(); // Перезагружаем список
+        } else {
+          showNotification("Ошибка создания агента: " + result.error, "danger");
+        }
+      })
+      .catch((error) => {
+        console.error("Ошибка:", error);
+        showNotification("Ошибка создания агента", "danger");
+      });
+  }
+
+  function startAgentSystem() {
+    fetch("/api/agents/control", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ action: "start" }),
+    })
+      .then((response) => response.json())
+      .then((result) => {
+        if (result.success) {
+          showNotification("Система агентов запущена", "success");
+          loadAgents();
+        } else {
+          showNotification("Ошибка запуска: " + result.error, "danger");
+        }
+      })
+      .catch((error) => {
+        console.error("Ошибка:", error);
+        showNotification("Ошибка запуска системы", "danger");
+      });
+  }
+
+  function stopAgentSystem() {
+    fetch("/api/agents/control", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ action: "stop" }),
+    })
+      .then((response) => response.json())
+      .then((result) => {
+        if (result.success) {
+          showNotification("Система агентов остановлена", "warning");
+          loadAgents();
+        } else {
+          showNotification("Ошибка остановки: " + result.error, "danger");
+        }
+      })
+      .catch((error) => {
+        console.error("Ошибка:", error);
+        showNotification("Ошибка остановки системы", "danger");
+      });
+  }
+
+  function showAgentDetails(agentId) {
+    const agent = agentsData.autonomous_agents.find((a) => a.id === agentId);
+    if (!agent) return;
+
+    const detailsContent = document.getElementById("agentDetailsContent");
+    detailsContent.innerHTML = `
+        <div class="row">
+            <div class="col-md-6">
+                <h6>Основная информация</h6>
+                <table class="table table-sm">
+                    <tr><td><strong>ID:</strong></td><td>${agent.id}</td></tr>
+                    <tr><td><strong>Название:</strong></td><td>${
+                      agent.name
+                    }</td></tr>
+                    <tr><td><strong>Тип:</strong></td><td>${getAgentTypeLabel(
+                      agent.type
+                    )}</td></tr>
+                    <tr><td><strong>Статус:</strong></td><td>${
+                      agent.is_active ? "Активен" : "Неактивен"
+                    }</td></tr>
+                </table>
+            </div>
+            <div class="col-md-6">
+                <h6>Статистика</h6>
+                <table class="table table-sm">
+                    <tr><td><strong>Успешных запусков:</strong></td><td>${
+                      agent.success_count || 0
+                    }</td></tr>
+                    <tr><td><strong>Ошибок:</strong></td><td>${
+                      agent.error_count || 0
+                    }</td></tr>
+                    <tr><td><strong>Успешность:</strong></td><td>${(
+                      agent.success_rate || 0
+                    ).toFixed(1)}%</td></tr>
+                    <tr><td><strong>Последний запуск:</strong></td><td>${
+                      agent.last_run
+                        ? new Date(agent.last_run).toLocaleString()
+                        : "Никогда"
+                    }</td></tr>
+                </table>
+            </div>
+        </div>
+    `;
+
+    new bootstrap.Modal(document.getElementById("agentDetailsModal")).show();
+  }
+
+  function editAgent(agentId) {
+    showNotification("Функция редактирования в разработке", "info");
+  }
+
+  function deleteAgent(agentId) {
+    if (confirm("Вы уверены, что хотите удалить этого агента?")) {
+      showNotification("Функция удаления в разработке", "info");
+    }
+  }
+
+  function showNotification(message, type = "info") {
+    const alertDiv = document.createElement("div");
+    alertDiv.className = `alert alert-${type} alert-dismissible fade show position-fixed`;
+    alertDiv.style.cssText =
+      "top: 20px; right: 20px; z-index: 9999; min-width: 300px;";
+    alertDiv.innerHTML = `
+        ${message}
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    `;
+
+    document.body.appendChild(alertDiv);
+
+    setTimeout(() => {
+      if (alertDiv.parentNode) {
+        alertDiv.remove();
+      }
+    }, 5000);
+  }
+</script>
+{% endblock %}

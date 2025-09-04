@@ -1,0 +1,380 @@
+{% extends "base.html" %} {% block title %}Колыбель - Аналитика{% endblock %} {%
+block content %}
+<div class="row mb-4">
+  <div class="col-12">
+    <h2><i class="bi bi-graph-up"></i> Аналитика и статистика</h2>
+  </div>
+</div>
+
+<!-- Основные метрики -->
+<div class="row mb-4">
+  <div class="col-md-3">
+    <div class="card text-center">
+      <div class="card-body">
+        <i class="bi bi-chat-dots display-6 text-primary"></i>
+        <h5 class="card-title mt-2">Сообщений</h5>
+        <h3 class="text-primary" id="total-messages">-</h3>
+        <small class="text-muted">всего обработано</small>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-3">
+    <div class="card text-center">
+      <div class="card-body">
+        <i class="bi bi-robot display-6 text-success"></i>
+        <h5 class="card-title mt-2">Агенты</h5>
+        <h3 class="text-success" id="active-agents-count">-</h3>
+        <small class="text-muted">активных агентов</small>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-3">
+    <div class="card text-center">
+      <div class="card-body">
+        <i class="bi bi-check-circle display-6 text-info"></i>
+        <h5 class="card-title mt-2">Успешность</h5>
+        <h3 class="text-info" id="success-rate">-</h3>
+        <small class="text-muted">выполнения задач</small>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-3">
+    <div class="card text-center">
+      <div class="card-body">
+        <i class="bi bi-memory display-6 text-warning"></i>
+        <h5 class="card-title mt-2">Память</h5>
+        <h3 class="text-warning" id="memory-size">-</h3>
+        <small class="text-muted">записей в памяти</small>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Графики -->
+<div class="row mb-4">
+  <div class="col-lg-8">
+    <div class="card">
+      <div class="card-header">
+        <h5 class="mb-0">
+          <i class="bi bi-graph-up"></i> Активность по времени
+        </h5>
+      </div>
+      <div class="card-body">
+        <canvas id="activityChart" height="100"></canvas>
+      </div>
+    </div>
+  </div>
+  <div class="col-lg-4">
+    <div class="card">
+      <div class="card-header">
+        <h5 class="mb-0"><i class="bi bi-pie-chart"></i> Типы агентов</h5>
+      </div>
+      <div class="card-body">
+        <canvas id="agentTypesChart"></canvas>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Детальная статистика -->
+<div class="row">
+  <div class="col-lg-6">
+    <div class="card">
+      <div class="card-header">
+        <h5 class="mb-0">
+          <i class="bi bi-list-check"></i> Производительность агентов
+        </h5>
+      </div>
+      <div class="card-body">
+        <div id="agents-performance">
+          <div class="text-center">
+            <div class="spinner-border" role="status">
+              <span class="visually-hidden">Загрузка...</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="col-lg-6">
+    <div class="card">
+      <div class="card-header">
+        <h5 class="mb-0">
+          <i class="bi bi-clock-history"></i> Последние события
+        </h5>
+      </div>
+      <div class="card-body">
+        <div id="recent-events">
+          <div class="text-center">
+            <div class="spinner-border" role="status">
+              <span class="visually-hidden">Загрузка...</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %} {% block extra_scripts %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+  let activityChart, agentTypesChart;
+
+  document.addEventListener("DOMContentLoaded", function () {
+    loadAnalytics();
+    initCharts();
+
+    // Обновляем данные каждые 60 секунд
+    setInterval(loadAnalytics, 60000);
+  });
+
+  function loadAnalytics() {
+    Promise.all([
+      fetch("/api/status").then((r) => r.json()),
+      fetch("/api/agents").then((r) => r.json()),
+    ])
+      .then(([statusData, agentsData]) => {
+        updateMetrics(statusData, agentsData);
+        updateAgentsPerformance(agentsData);
+        updateActivityChart();
+        updateAgentTypesChart(agentsData);
+        updateRecentEvents();
+      })
+      .catch((error) => {
+        console.error("Ошибка загрузки аналитики:", error);
+      });
+  }
+
+  function updateMetrics(statusData, agentsData) {
+    // Обновляем основные метрики
+    document.getElementById("total-messages").textContent =
+      statusData.sessions?.total_messages || 0;
+
+    document.getElementById("active-agents-count").textContent =
+      agentsData.autonomous_count || 0;
+
+    // Вычисляем общую успешность
+    const agents = agentsData.autonomous_agents || [];
+    const totalSuccess = agents.reduce(
+      (sum, agent) => sum + (agent.success_count || 0),
+      0
+    );
+    const totalErrors = agents.reduce(
+      (sum, agent) => sum + (agent.error_count || 0),
+      0
+    );
+    const successRate =
+      totalSuccess + totalErrors > 0
+        ? ((totalSuccess / (totalSuccess + totalErrors)) * 100).toFixed(1)
+        : 0;
+
+    document.getElementById("success-rate").textContent = successRate + "%";
+    document.getElementById("memory-size").textContent =
+      statusData.memory?.total_documents || 0;
+  }
+
+  function updateAgentsPerformance(agentsData) {
+    const performanceDiv = document.getElementById("agents-performance");
+    const agents = agentsData.autonomous_agents || [];
+
+    if (agents.length === 0) {
+      performanceDiv.innerHTML =
+        '<p class="text-muted text-center">Нет активных агентов</p>';
+      return;
+    }
+
+    let html = "";
+    agents.forEach((agent) => {
+      const successRate = agent.success_rate || 0;
+      const progressColor =
+        successRate >= 80
+          ? "success"
+          : successRate >= 60
+          ? "warning"
+          : "danger";
+
+      html += `
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <div>
+                    <strong>${agent.name}</strong>
+                    <br>
+                    <small class="text-muted">${getAgentTypeLabel(
+                      agent.type
+                    )}</small>
+                </div>
+                <div class="text-end">
+                    <div class="progress" style="width: 100px; height: 8px;">
+                        <div class="progress-bar bg-${progressColor}" style="width: ${successRate}%"></div>
+                    </div>
+                    <small>${successRate.toFixed(1)}%</small>
+                </div>
+            </div>
+        `;
+    });
+
+    performanceDiv.innerHTML = html;
+  }
+
+  function initCharts() {
+    // График активности
+    const activityCtx = document
+      .getElementById("activityChart")
+      .getContext("2d");
+    activityChart = new Chart(activityCtx, {
+      type: "line",
+      data: {
+        labels: [],
+        datasets: [
+          {
+            label: "Сообщения",
+            data: [],
+            borderColor: "#007bff",
+            backgroundColor: "rgba(0, 123, 255, 0.1)",
+            tension: 0.4,
+          },
+          {
+            label: "Выполнения агентов",
+            data: [],
+            borderColor: "#28a745",
+            backgroundColor: "rgba(40, 167, 69, 0.1)",
+            tension: 0.4,
+          },
+        ],
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        scales: {
+          y: {
+            beginAtZero: true,
+          },
+        },
+      },
+    });
+
+    // График типов агентов
+    const agentTypesCtx = document
+      .getElementById("agentTypesChart")
+      .getContext("2d");
+    agentTypesChart = new Chart(agentTypesCtx, {
+      type: "doughnut",
+      data: {
+        labels: [],
+        datasets: [
+          {
+            data: [],
+            backgroundColor: [
+              "#007bff",
+              "#28a745",
+              "#ffc107",
+              "#dc3545",
+              "#6f42c1",
+            ],
+          },
+        ],
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+      },
+    });
+  }
+
+  function updateActivityChart() {
+    // Генерируем фиктивные данные для демонстрации
+    const now = new Date();
+    const labels = [];
+    const messagesData = [];
+    const agentData = [];
+
+    for (let i = 23; i >= 0; i--) {
+      const time = new Date(now.getTime() - i * 60 * 60 * 1000);
+      labels.push(time.getHours() + ":00");
+      messagesData.push(Math.floor(Math.random() * 20));
+      agentData.push(Math.floor(Math.random() * 10));
+    }
+
+    activityChart.data.labels = labels;
+    activityChart.data.datasets[0].data = messagesData;
+    activityChart.data.datasets[1].data = agentData;
+    activityChart.update();
+  }
+
+  function updateAgentTypesChart(agentsData) {
+    const agents = agentsData.autonomous_agents || [];
+    const typeCounts = {};
+
+    agents.forEach((agent) => {
+      const type = getAgentTypeLabel(agent.type);
+      typeCounts[type] = (typeCounts[type] || 0) + 1;
+    });
+
+    agentTypesChart.data.labels = Object.keys(typeCounts);
+    agentTypesChart.data.datasets[0].data = Object.values(typeCounts);
+    agentTypesChart.update();
+  }
+
+  function updateRecentEvents() {
+    const eventsDiv = document.getElementById("recent-events");
+
+    // Фиктивные события для демонстрации
+    const events = [
+      {
+        icon: "bi-robot",
+        text: "RSS агент успешно опубликовал 3 поста",
+        time: "2 мин назад",
+        type: "success",
+      },
+      {
+        icon: "bi-chat-dots",
+        text: "Обработано 15 сообщений в чате",
+        time: "5 мин назад",
+        type: "info",
+      },
+      {
+        icon: "bi-target",
+        text: "Добавлена новая цель",
+        time: "10 мин назад",
+        type: "primary",
+      },
+      {
+        icon: "bi-exclamation-triangle",
+        text: "Агент контента: ошибка подключения",
+        time: "15 мин назад",
+        type: "warning",
+      },
+      {
+        icon: "bi-check-circle",
+        text: "Система агентов запущена",
+        time: "30 мин назад",
+        type: "success",
+      },
+    ];
+
+    let html = '<div class="list-group list-group-flush">';
+    events.forEach((event) => {
+      html += `
+            <div class="list-group-item d-flex align-items-center">
+                <i class="bi ${event.icon} text-${event.type} me-3"></i>
+                <div class="flex-grow-1">
+                    <div class="fw-bold">${event.text}</div>
+                    <small class="text-muted">${event.time}</small>
+                </div>
+            </div>
+        `;
+    });
+    html += "</div>";
+
+    eventsDiv.innerHTML = html;
+  }
+
+  function getAgentTypeLabel(type) {
+    const types = {
+      rss_monitor: "RSS Монитор",
+      content_generator: "Генератор контента",
+      channel_manager: "Менеджер канала",
+    };
+    return types[type] || type;
+  }
+</script>
+{% endblock %}

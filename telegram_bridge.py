@@ -1,51 +1,97 @@
-# telegram_bridge.py — минимально устойчивый бридж
-import asyncio
+# telegram_bridge.py — упрощенный мост для отправки сообщений
+import requests
 import logging
-from aiogram import Bot, Dispatcher, F
-from aiogram.types import Message
-from aiogram.enums import ParseMode
-from aiogram.fsm.storage.memory import MemoryStorage
-from config import TELEGRAM_TOKEN, TELEGRAM_CHANNEL_ID, TELEGRAM_PROMO_CHANNELS
-from core import handle_user_input
+from typing import Optional
+from config import TELEGRAM_TOKEN, TELEGRAM_API_BASE
 
-logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(name)s: %(message)s")
 logger = logging.getLogger(__name__)
 
-bot = Bot(token=TELEGRAM_TOKEN, parse_mode=ParseMode.HTML)
-dp = Dispatcher(storage=MemoryStorage())
 
-async def promote_channel(channel_theme: str):
-    if not TELEGRAM_PROMO_CHANNELS:
-        logger.warning("Нет каналов для продвижения")
-        return
-    targets = [c.strip() for c in TELEGRAM_PROMO_CHANNELS.split(",") if c.strip()]
-    our = TELEGRAM_CHANNEL_ID if TELEGRAM_CHANNEL_ID.startswith("@") else f"@{TELEGRAM_CHANNEL_ID}"
-    for ch in targets:
-        try:
-            await bot.send_message(
-                chat_id=ch,
-                text=f"🔮 Вашим подписчикам понравится: {channel_theme}. Подписывайтесь: {our}\n\n#новыйканал #технологии",
-            )
-            await asyncio.sleep(5)
-        except Exception as e:
-            logger.error(f"Ошибка промо в {ch}: {e}")
+def send_telegram_message(chat_id: str, text: str, parse_mode: str = "HTML") -> bool:
+    """
+    Отправка сообщения в Telegram канал/чат
+    """
+    if not TELEGRAM_TOKEN:
+        logger.error("TELEGRAM_TOKEN не настроен")
+        return False
 
-@dp.message(F.text)
-async def handle_user_message(message: Message):
-    text = message.text or ""
-    # Команда запуска канала → параллельно промо
-    if text.lower().startswith(("создай канал", "запусти канал")):
-        theme = text.split("канал", 1)[-1].strip(" \"'")
-        asyncio.create_task(promote_channel(theme))
-    reply = handle_user_input(text)
-    await message.answer(reply)
+    url = f"{TELEGRAM_API_BASE}/bot{TELEGRAM_TOKEN}/sendMessage"
 
-def start_telegram():
-    loop = asyncio.new_event_loop()
-    asyncio.set_event_loop(loop)
+    payload = {
+        "chat_id": chat_id,
+        "text": text,
+        "parse_mode": parse_mode,
+        "disable_web_page_preview": False
+    }
+
     try:
-        loop.run_until_complete(dp.start_polling(bot))
-    except KeyboardInterrupt:
-        logger.info("Бот остановлен")
-    finally:
-        loop.close()
+        response = requests.post(url, json=payload, timeout=30)
+
+        if response.status_code == 200:
+            logger.info(f"Сообщение отправлено в {chat_id}")
+            return True
+        else:
+            logger.error(
+                f"Ошибка отправки в Telegram: {response.status_code} - {response.text}")
+            return False
+
+    except Exception as e:
+        logger.error(f"Исключение при отправке в Telegram: {e}")
+        return False
+
+
+def send_telegram_photo(chat_id: str, photo_url: str, caption: str = "") -> bool:
+    """
+    Отправка фото в Telegram канал/чат
+    """
+    if not TELEGRAM_TOKEN:
+        logger.error("TELEGRAM_TOKEN не настроен")
+        return False
+
+    url = f"{TELEGRAM_API_BASE}/bot{TELEGRAM_TOKEN}/sendPhoto"
+
+    payload = {
+        "chat_id": chat_id,
+        "photo": photo_url,
+        "caption": caption,
+        "parse_mode": "HTML"
+    }
+
+    try:
+        response = requests.post(url, json=payload, timeout=30)
+
+        if response.status_code == 200:
+            logger.info(f"Фото отправлено в {chat_id}")
+            return True
+        else:
+            logger.error(
+                f"Ошибка отправки фото в Telegram: {response.status_code}")
+            return False
+
+    except Exception as e:
+        logger.error(f"Исключение при отправке фото в Telegram: {e}")
+        return False
+
+
+def get_chat_info(chat_id: str) -> Optional[dict]:
+    """
+    Получение информации о чате/канале
+    """
+    if not TELEGRAM_TOKEN:
+        return None
+
+    url = f"{TELEGRAM_API_BASE}/bot{TELEGRAM_TOKEN}/getChat"
+
+    try:
+        response = requests.post(url, json={"chat_id": chat_id}, timeout=30)
+
+        if response.status_code == 200:
+            return response.json().get("result")
+        else:
+            logger.error(
+                f"Ошибка получения информации о чате: {response.status_code}")
+            return None
+
+    except Exception as e:
+        logger.error(f"Исключение при получении информации о чате: {e}")
+        return None

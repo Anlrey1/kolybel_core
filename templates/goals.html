@@ -1,0 +1,421 @@
+{% extends "base.html" %} {% block title %}Колыбель - Управление целями{%
+endblock %} {% block content %}
+<div class="row">
+  <div class="col-lg-8">
+    <div class="card">
+      <div
+        class="card-header d-flex justify-content-between align-items-center"
+      >
+        <h5 class="mb-0"><i class="bi bi-target"></i> Мои цели</h5>
+        <button
+          class="btn btn-primary"
+          data-bs-toggle="modal"
+          data-bs-target="#addGoalModal"
+        >
+          <i class="bi bi-plus"></i> Добавить цель
+        </button>
+      </div>
+      <div class="card-body">
+        <div id="goals-list">
+          <div class="text-center">
+            <div class="spinner-border" role="status">
+              <span class="visually-hidden">Загрузка...</span>
+            </div>
+            <p class="mt-2">Загрузка целей...</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-lg-4">
+    <div class="card mb-4">
+      <div class="card-header">
+        <h6 class="mb-0"><i class="bi bi-graph-up"></i> Прогресс</h6>
+      </div>
+      <div class="card-body text-center">
+        <div class="mb-3">
+          <canvas id="goalsChart" width="200" height="200"></canvas>
+        </div>
+        <div class="row text-center">
+          <div class="col-4">
+            <div class="text-success">
+              <strong id="completed-goals">0</strong>
+              <br /><small>Выполнено</small>
+            </div>
+          </div>
+          <div class="col-4">
+            <div class="text-warning">
+              <strong id="active-goals">0</strong>
+              <br /><small>Активных</small>
+            </div>
+          </div>
+          <div class="col-4">
+            <div class="text-info">
+              <strong id="total-goals">0</strong>
+              <br /><small>Всего</small>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header">
+        <h6 class="mb-0"><i class="bi bi-lightbulb"></i> Рекомендации</h6>
+      </div>
+      <div class="card-body">
+        <div id="recommendations">
+          <p class="text-muted">
+            Добавьте цели, чтобы получить персональные рекомендации
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Модальное окно добавления цели -->
+<div class="modal fade" id="addGoalModal" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">
+          <i class="bi bi-plus-circle"></i> Добавить новую цель
+        </h5>
+        <button
+          type="button"
+          class="btn-close"
+          data-bs-dismiss="modal"
+        ></button>
+      </div>
+      <div class="modal-body">
+        <form id="addGoalForm">
+          <div class="mb-3">
+            <label class="form-label">Описание цели</label>
+            <textarea
+              class="form-control"
+              name="text"
+              rows="3"
+              placeholder="Опишите вашу цель подробно..."
+              required
+            ></textarea>
+            <div class="form-text">
+              Будьте конкретны - это поможет Колыбели лучше помочь вам
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-md-6">
+              <div class="mb-3">
+                <label class="form-label">Приоритет</label>
+                <select class="form-select" name="priority">
+                  <option value="medium">Средний</option>
+                  <option value="high">Высокий</option>
+                  <option value="low">Низкий</option>
+                </select>
+              </div>
+            </div>
+            <div class="col-md-6">
+              <div class="mb-3">
+                <label class="form-label">Категория</label>
+                <select class="form-select" name="category">
+                  <option value="business">Бизнес</option>
+                  <option value="personal">Личное</option>
+                  <option value="learning">Обучение</option>
+                  <option value="health">Здоровье</option>
+                  <option value="other">Другое</option>
+                </select>
+              </div>
+            </div>
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Дедлайн (опционально)</label>
+            <input type="date" class="form-control" name="deadline" />
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+          Отмена
+        </button>
+        <button type="button" class="btn btn-primary" onclick="addGoal()">
+          <i class="bi bi-plus"></i> Добавить цель
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %} {% block extra_scripts %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+  let goalsData = [];
+  let goalsChart;
+
+  document.addEventListener("DOMContentLoaded", function () {
+    loadGoals();
+    initChart();
+  });
+
+  function loadGoals() {
+    fetch("/api/goals")
+      .then((response) => response.json())
+      .then((data) => {
+        goalsData = data.goals || [];
+        displayGoals(goalsData);
+        updateStatistics(goalsData);
+        updateChart(goalsData);
+        generateRecommendations(goalsData);
+      })
+      .catch((error) => {
+        console.error("Ошибка загрузки целей:", error);
+        document.getElementById("goals-list").innerHTML =
+          '<div class="alert alert-danger">Ошибка загрузки целей</div>';
+      });
+  }
+
+  function displayGoals(goals) {
+    const goalsList = document.getElementById("goals-list");
+
+    if (!goals || goals.length === 0) {
+      goalsList.innerHTML = `
+            <div class="text-center py-4">
+                <i class="bi bi-target display-1 text-muted"></i>
+                <h4 class="text-muted mt-3">Нет целей</h4>
+                <p class="text-muted">Добавьте первую цель, чтобы начать достигать результатов</p>
+                <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addGoalModal">
+                    <i class="bi bi-plus"></i> Добавить цель
+                </button>
+            </div>
+        `;
+      return;
+    }
+
+    let html = "";
+    goals.forEach((goal, index) => {
+      const isCompleted = goal.completed;
+      const cardClass = isCompleted ? "border-success" : "border-warning";
+      const iconClass = isCompleted
+        ? "bi-check-circle-fill text-success"
+        : "bi-circle text-warning";
+
+      html += `
+            <div class="card mb-3 ${cardClass}">
+                <div class="card-body">
+                    <div class="d-flex align-items-start">
+                        <div class="me-3 mt-1">
+                            <i class="bi ${iconClass} fs-4" style="cursor: pointer;" onclick="toggleGoal(${index})"></i>
+                        </div>
+                        <div class="flex-grow-1">
+                            <p class="mb-2 ${
+                              isCompleted
+                                ? "text-decoration-line-through text-muted"
+                                : ""
+                            }">${goal.text}</p>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <span class="badge bg-secondary me-1">${
+                                      goal.category || "Общее"
+                                    }</span>
+                                    <span class="badge bg-${getPriorityColor(
+                                      goal.priority || "medium"
+                                    )}">${getPriorityLabel(
+        goal.priority || "medium"
+      )}</span>
+                                </div>
+                                <div>
+                                    <button class="btn btn-sm btn-outline-primary me-1" onclick="editGoal(${index})">
+                                        <i class="bi bi-pencil"></i>
+                                    </button>
+                                    <button class="btn btn-sm btn-outline-danger" onclick="deleteGoal(${index})">
+                                        <i class="bi bi-trash"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `;
+    });
+
+    goalsList.innerHTML = html;
+  }
+
+  function updateStatistics(goals) {
+    const completed = goals.filter((g) => g.completed).length;
+    const active = goals.filter((g) => !g.completed).length;
+    const total = goals.length;
+
+    document.getElementById("completed-goals").textContent = completed;
+    document.getElementById("active-goals").textContent = active;
+    document.getElementById("total-goals").textContent = total;
+  }
+
+  function initChart() {
+    const ctx = document.getElementById("goalsChart").getContext("2d");
+    goalsChart = new Chart(ctx, {
+      type: "doughnut",
+      data: {
+        labels: ["Выполнено", "Активных"],
+        datasets: [
+          {
+            data: [0, 0],
+            backgroundColor: ["#28a745", "#ffc107"],
+            borderWidth: 0,
+          },
+        ],
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: {
+            display: false,
+          },
+        },
+      },
+    });
+  }
+
+  function updateChart(goals) {
+    const completed = goals.filter((g) => g.completed).length;
+    const active = goals.filter((g) => !g.completed).length;
+
+    goalsChart.data.datasets[0].data = [completed, active];
+    goalsChart.update();
+  }
+
+  function generateRecommendations(goals) {
+    const recommendationsDiv = document.getElementById("recommendations");
+
+    if (!goals || goals.length === 0) {
+      recommendationsDiv.innerHTML =
+        '<p class="text-muted">Добавьте цели, чтобы получить персональные рекомендации</p>';
+      return;
+    }
+
+    const activeGoals = goals.filter((g) => !g.completed);
+    const completedGoals = goals.filter((g) => g.completed);
+
+    let recommendations = [];
+
+    if (activeGoals.length === 0) {
+      recommendations.push(
+        "🎉 Все цели выполнены! Время ставить новые амбициозные задачи."
+      );
+    } else if (activeGoals.length > 5) {
+      recommendations.push(
+        "📝 У вас много активных целей. Сосредоточьтесь на 3-5 самых важных."
+      );
+    }
+
+    if (completedGoals.length > 0) {
+      recommendations.push("✅ Отличная работа! Продолжайте в том же духе.");
+    }
+
+    const businessGoals = activeGoals.filter((g) => g.category === "business");
+    if (businessGoals.length > 0) {
+      recommendations.push(
+        "💼 Рассмотрите создание агентов для автоматизации бизнес-процессов."
+      );
+    }
+
+    if (recommendations.length === 0) {
+      recommendations.push(
+        "🎯 Ставьте конкретные, измеримые цели с дедлайнами."
+      );
+    }
+
+    let html = '<ul class="list-unstyled">';
+    recommendations.forEach((rec) => {
+      html += `<li class="mb-2"><small>${rec}</small></li>`;
+    });
+    html += "</ul>";
+
+    recommendationsDiv.innerHTML = html;
+  }
+
+  function addGoal() {
+    const form = document.getElementById("addGoalForm");
+    const formData = new FormData(form);
+    const data = Object.fromEntries(formData);
+
+    fetch("/api/goals", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(data),
+    })
+      .then((response) => response.json())
+      .then((result) => {
+        if (result.success) {
+          showNotification("Цель добавлена успешно!", "success");
+          bootstrap.Modal.getInstance(
+            document.getElementById("addGoalModal")
+          ).hide();
+          form.reset();
+          loadGoals();
+        } else {
+          showNotification("Ошибка добавления цели: " + result.error, "danger");
+        }
+      })
+      .catch((error) => {
+        console.error("Ошибка:", error);
+        showNotification("Ошибка добавления цели", "danger");
+      });
+  }
+
+  function toggleGoal(index) {
+    // Заглушка для переключения статуса цели
+    showNotification("Функция в разработке", "info");
+  }
+
+  function editGoal(index) {
+    showNotification("Функция редактирования в разработке", "info");
+  }
+
+  function deleteGoal(index) {
+    if (confirm("Вы уверены, что хотите удалить эту цель?")) {
+      showNotification("Функция удаления в разработке", "info");
+    }
+  }
+
+  function getPriorityColor(priority) {
+    const colors = {
+      high: "danger",
+      medium: "warning",
+      low: "info",
+    };
+    return colors[priority] || "secondary";
+  }
+
+  function getPriorityLabel(priority) {
+    const labels = {
+      high: "Высокий",
+      medium: "Средний",
+      low: "Низкий",
+    };
+    return labels[priority] || priority;
+  }
+
+  function showNotification(message, type = "info") {
+    const alertDiv = document.createElement("div");
+    alertDiv.className = `alert alert-${type} alert-dismissible fade show position-fixed`;
+    alertDiv.style.cssText =
+      "top: 20px; right: 20px; z-index: 9999; min-width: 300px;";
+    alertDiv.innerHTML = `
+        ${message}
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    `;
+
+    document.body.appendChild(alertDiv);
+
+    setTimeout(() => {
+      if (alertDiv.parentNode) {
+        alertDiv.remove();
+      }
+    }, 5000);
+  }
+</script>
+{% endblock %}

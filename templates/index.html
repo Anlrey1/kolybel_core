@@ -1,0 +1,508 @@
+{% extends "base.html" %} {% block title %}Колыбель - Главная{% endblock %} {%
+block content %}
+<div class="row">
+  <!-- Левая колонка - Статус системы -->
+  <div class="col-lg-8">
+    <!-- Приветствие -->
+    <div class="card mb-4">
+      <div class="card-body text-center">
+        <h1 class="display-4">
+          <i class="bi bi-cpu text-primary"></i> Колыбель
+        </h1>
+        <p class="lead">Ваш автономный интеллектуальный ассистент</p>
+        <p class="text-muted">
+          Готов помочь с задачами, управлением агентами и достижением целей
+        </p>
+
+        <!-- Быстрые действия -->
+        <div class="d-grid gap-2 d-md-flex justify-content-md-center mt-4">
+          <a href="{{ url_for('chat') }}" class="btn btn-primary btn-lg">
+            <i class="bi bi-chat-dots"></i> Начать диалог
+          </a>
+          <a
+            href="{{ url_for('agents_page') }}"
+            class="btn btn-outline-primary btn-lg"
+          >
+            <i class="bi bi-robot"></i> Управление агентами
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Статистика системы -->
+    <div class="row">
+      <div class="col-md-3">
+        <div class="card text-center">
+          <div class="card-body">
+            <i class="bi bi-robot display-6 text-primary"></i>
+            <h5 class="card-title mt-2">Агенты</h5>
+            <h3 class="text-primary" id="agents-count">-</h3>
+            <small class="text-muted">активных</small>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-3">
+        <div class="card text-center">
+          <div class="card-body">
+            <i class="bi bi-target display-6 text-success"></i>
+            <h5 class="card-title mt-2">Цели</h5>
+            <h3 class="text-success" id="goals-count">-</h3>
+            <small class="text-muted">активных</small>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-3">
+        <div class="card text-center">
+          <div class="card-body">
+            <i class="bi bi-memory display-6 text-info"></i>
+            <h5 class="card-title mt-2">Память</h5>
+            <h3 class="text-info" id="memory-count">-</h3>
+            <small class="text-muted">записей</small>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-3">
+        <div class="card text-center">
+          <div class="card-body">
+            <i class="bi bi-chat-square-dots display-6 text-warning"></i>
+            <h5 class="card-title mt-2">Сессии</h5>
+            <h3 class="text-warning" id="sessions-count">-</h3>
+            <small class="text-muted">активных</small>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Последние события -->
+    <div class="card mt-4">
+      <div class="card-header">
+        <h5 class="mb-0">
+          <i class="bi bi-clock-history"></i> Последние события
+        </h5>
+      </div>
+      <div class="card-body">
+        <div id="recent-events">
+          <div class="text-center text-muted">
+            <div class="spinner-border spinner-border-sm" role="status">
+              <span class="visually-hidden">Загрузка...</span>
+            </div>
+            Загрузка событий...
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Правая колонка - Быстрые функции -->
+  <div class="col-lg-4">
+    <!-- Быстрое создание агента -->
+    <div class="card mb-4">
+      <div class="card-header">
+        <h5 class="mb-0"><i class="bi bi-plus-circle"></i> Быстрое создание</h5>
+      </div>
+      <div class="card-body">
+        <div class="d-grid gap-2">
+          <button
+            class="btn btn-outline-primary"
+            onclick="showQuickAgentModal()"
+          >
+            <i class="bi bi-robot"></i> Создать агента
+          </button>
+          <button
+            class="btn btn-outline-success"
+            onclick="showQuickGoalModal()"
+          >
+            <i class="bi bi-target"></i> Добавить цель
+          </button>
+          <button class="btn btn-outline-info" onclick="showQuickTaskModal()">
+            <i class="bi bi-list-task"></i> Создать задачу
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Статус агентов -->
+    <div class="card mb-4">
+      <div class="card-header">
+        <h5 class="mb-0"><i class="bi bi-activity"></i> Статус агентов</h5>
+      </div>
+      <div class="card-body">
+        <div id="agents-status">
+          <div class="text-center text-muted">
+            <div class="spinner-border spinner-border-sm" role="status">
+              <span class="visually-hidden">Загрузка...</span>
+            </div>
+            Загрузка статуса...
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Системная информация -->
+    <div class="card">
+      <div class="card-header">
+        <h5 class="mb-0"><i class="bi bi-info-circle"></i> Система</h5>
+      </div>
+      <div class="card-body">
+        <div class="row text-center">
+          <div class="col-6">
+            <div class="border-end">
+              <div id="system-uptime" class="fw-bold text-primary">-</div>
+              <small class="text-muted">Время работы</small>
+            </div>
+          </div>
+          <div class="col-6">
+            <div id="system-version" class="fw-bold text-success">v2.0</div>
+            <small class="text-muted">Версия</small>
+          </div>
+        </div>
+
+        <hr />
+
+        <div class="d-grid gap-2">
+          <button
+            class="btn btn-sm btn-outline-primary"
+            onclick="refreshSystemStatus()"
+          >
+            <i class="bi bi-arrow-clockwise"></i> Обновить статус
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Модальные окна -->
+<!-- Быстрое создание агента -->
+<div class="modal fade" id="quickAgentModal" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">
+          <i class="bi bi-robot"></i> Быстрое создание агента
+        </h5>
+        <button
+          type="button"
+          class="btn-close"
+          data-bs-dismiss="modal"
+        ></button>
+      </div>
+      <div class="modal-body">
+        <form id="quickAgentForm">
+          <div class="mb-3">
+            <label class="form-label">Тип агента</label>
+            <select class="form-select" name="type" required>
+              <option value="rss_monitor">RSS Монитор</option>
+              <option value="content_generator">Генератор контента</option>
+              <option value="channel_manager">Менеджер канала</option>
+            </select>
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Telegram канал/чат ID</label>
+            <input
+              type="text"
+              class="form-control"
+              name="chat_id"
+              placeholder="@channel или -1001234567890"
+              required
+            />
+          </div>
+          <div class="mb-3" id="rss-url-group">
+            <label class="form-label">RSS URL</label>
+            <input
+              type="url"
+              class="form-control"
+              name="rss_url"
+              placeholder="https://example.com/rss"
+            />
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Стиль/Описание</label>
+            <input
+              type="text"
+              class="form-control"
+              name="style"
+              placeholder="информативный стиль для молодежи"
+            />
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+          Отмена
+        </button>
+        <button
+          type="button"
+          class="btn btn-primary"
+          onclick="createQuickAgent()"
+        >
+          <i class="bi bi-plus"></i> Создать агента
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Быстрое создание цели -->
+<div class="modal fade" id="quickGoalModal" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title"><i class="bi bi-target"></i> Добавить цель</h5>
+        <button
+          type="button"
+          class="btn-close"
+          data-bs-dismiss="modal"
+        ></button>
+      </div>
+      <div class="modal-body">
+        <form id="quickGoalForm">
+          <div class="mb-3">
+            <label class="form-label">Описание цели</label>
+            <textarea
+              class="form-control"
+              name="text"
+              rows="3"
+              placeholder="Опишите вашу цель..."
+              required
+            ></textarea>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+          Отмена
+        </button>
+        <button
+          type="button"
+          class="btn btn-success"
+          onclick="createQuickGoal()"
+        >
+          <i class="bi bi-plus"></i> Добавить цель
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %} {% block extra_scripts %}
+<script>
+  // Загрузка статуса системы при загрузке страницы
+  document.addEventListener("DOMContentLoaded", function () {
+    loadSystemStatus();
+    loadRecentEvents();
+    loadAgentsStatus();
+
+    // Обновляем статус каждые 30 секунд
+    setInterval(loadSystemStatus, 30000);
+  });
+
+  function loadSystemStatus() {
+    fetch("/api/status")
+      .then((response) => response.json())
+      .then((data) => {
+        if (data.error) {
+          console.error("Ошибка загрузки статуса:", data.error);
+          return;
+        }
+
+        // Обновляем счетчики
+        document.getElementById("agents-count").textContent =
+          data.agents.total_agents || 0;
+        document.getElementById("memory-count").textContent =
+          data.memory.total_documents || 0;
+        document.getElementById("sessions-count").textContent =
+          data.sessions.active_sessions || 0;
+
+        // Обновляем статус в навигации
+        const statusElement = document.getElementById("system-status");
+        if (data.status === "online") {
+          statusElement.className = "badge bg-success";
+          statusElement.innerHTML = '<i class="bi bi-circle-fill"></i> Онлайн';
+        } else {
+          statusElement.className = "badge bg-danger";
+          statusElement.innerHTML = '<i class="bi bi-circle-fill"></i> Офлайн';
+        }
+      })
+      .catch((error) => {
+        console.error("Ошибка:", error);
+        document.getElementById("system-status").className = "badge bg-danger";
+        document.getElementById("system-status").innerHTML =
+          '<i class="bi bi-circle-fill"></i> Ошибка';
+      });
+  }
+
+  function loadRecentEvents() {
+    // Заглушка для последних событий
+    const eventsContainer = document.getElementById("recent-events");
+    eventsContainer.innerHTML = `
+        <div class="list-group list-group-flush">
+            <div class="list-group-item d-flex justify-content-between align-items-center">
+                <div>
+                    <i class="bi bi-robot text-primary"></i>
+                    <strong>Система агентов запущена</strong>
+                </div>
+                <small class="text-muted">только что</small>
+            </div>
+            <div class="list-group-item d-flex justify-content-between align-items-center">
+                <div>
+                    <i class="bi bi-memory text-info"></i>
+                    Загружен манифест в память
+                </div>
+                <small class="text-muted">2 мин назад</small>
+            </div>
+            <div class="list-group-item d-flex justify-content-between align-items-center">
+                <div>
+                    <i class="bi bi-check-circle text-success"></i>
+                    Автообучение завершено
+                </div>
+                <small class="text-muted">5 мин назад</small>
+            </div>
+        </div>
+    `;
+  }
+
+  function loadAgentsStatus() {
+    fetch("/api/agents")
+      .then((response) => response.json())
+      .then((data) => {
+        const statusContainer = document.getElementById("agents-status");
+
+        if (data.autonomous_agents && data.autonomous_agents.length > 0) {
+          let html = '<div class="list-group list-group-flush">';
+
+          data.autonomous_agents.forEach((agent) => {
+            const statusIcon = agent.is_active
+              ? '<i class="bi bi-circle-fill text-success"></i>'
+              : '<i class="bi bi-circle-fill text-danger"></i>';
+
+            html += `
+                        <div class="list-group-item d-flex justify-content-between align-items-center">
+                            <div>
+                                ${statusIcon}
+                                <small>${agent.name}</small>
+                            </div>
+                            <span class="badge bg-primary rounded-pill">${agent.success_rate.toFixed(
+                              0
+                            )}%</span>
+                        </div>
+                    `;
+          });
+
+          html += "</div>";
+          statusContainer.innerHTML = html;
+        } else {
+          statusContainer.innerHTML =
+            '<p class="text-muted text-center">Нет активных агентов</p>';
+        }
+      })
+      .catch((error) => {
+        console.error("Ошибка загрузки агентов:", error);
+        document.getElementById("agents-status").innerHTML =
+          '<p class="text-danger text-center">Ошибка загрузки</p>';
+      });
+  }
+
+  function refreshSystemStatus() {
+    loadSystemStatus();
+    loadAgentsStatus();
+
+    // Показываем уведомление
+    showNotification("Статус системы обновлен", "success");
+  }
+
+  function showQuickAgentModal() {
+    new bootstrap.Modal(document.getElementById("quickAgentModal")).show();
+  }
+
+  function showQuickGoalModal() {
+    new bootstrap.Modal(document.getElementById("quickGoalModal")).show();
+  }
+
+  function showQuickTaskModal() {
+    showNotification("Функция в разработке", "info");
+  }
+
+  function createQuickAgent() {
+    const form = document.getElementById("quickAgentForm");
+    const formData = new FormData(form);
+    const data = Object.fromEntries(formData);
+
+    fetch("/api/agents", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(data),
+    })
+      .then((response) => response.json())
+      .then((result) => {
+        if (result.success) {
+          showNotification("Агент создан успешно!", "success");
+          bootstrap.Modal.getInstance(
+            document.getElementById("quickAgentModal")
+          ).hide();
+          form.reset();
+          loadSystemStatus();
+          loadAgentsStatus();
+        } else {
+          showNotification("Ошибка создания агента: " + result.error, "danger");
+        }
+      })
+      .catch((error) => {
+        console.error("Ошибка:", error);
+        showNotification("Ошибка создания агента", "danger");
+      });
+  }
+
+  function createQuickGoal() {
+    const form = document.getElementById("quickGoalForm");
+    const formData = new FormData(form);
+    const data = Object.fromEntries(formData);
+
+    fetch("/api/goals", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(data),
+    })
+      .then((response) => response.json())
+      .then((result) => {
+        if (result.success) {
+          showNotification("Цель добавлена успешно!", "success");
+          bootstrap.Modal.getInstance(
+            document.getElementById("quickGoalModal")
+          ).hide();
+          form.reset();
+        } else {
+          showNotification("Ошибка добавления цели: " + result.error, "danger");
+        }
+      })
+      .catch((error) => {
+        console.error("Ошибка:", error);
+        showNotification("Ошибка добавления цели", "danger");
+      });
+  }
+
+  function showNotification(message, type = "info") {
+    // Простая система уведомлений
+    const alertDiv = document.createElement("div");
+    alertDiv.className = `alert alert-${type} alert-dismissible fade show position-fixed`;
+    alertDiv.style.cssText =
+      "top: 20px; right: 20px; z-index: 9999; min-width: 300px;";
+    alertDiv.innerHTML = `
+        ${message}
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    `;
+
+    document.body.appendChild(alertDiv);
+
+    // Автоматически убираем через 5 секунд
+    setTimeout(() => {
+      if (alertDiv.parentNode) {
+        alertDiv.remove();
+      }
+    }, 5000);
+  }
+</script>
+{% endblock %}

@@ -1,6 +1,7 @@
 # Python
 __pycache__/
 *.pyc
+*.pyo
 .venv/
 venv/
 .env
@@ -10,6 +11,25 @@ logs/
 dialog_history.log
 awakening.log
 template_errors.log
+
+# Python caches and tools
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# Jupyter / notebooks
+.ipynb_checkpoints/
+
+# Coverage / тесты
+.coverage
+htmlcov/
+
+# VSCode settings sync
+*.code-workspace
+
+# Databases
+*.sqlite
+*.db
 
 # SSL/ключи/сертификаты
 ssl/
@@ -21,6 +41,7 @@ ssl/
 .vscode/
 .idea/
 .DS_Store
+Thumbs.db
 
 # Docker / локальные тома
 data/
@@ -45,10 +66,7 @@ cradle_memory/
 models_cache/
 n8n-docker/n8n_data/
 ollama_data/
-# generic large/binary
-*.sqlite
-*.bin
-*.safetensors
 
-# pytest cache
-.pytest_cache/ 
+# generic large/binary
+*.bin
+*.safetensors 

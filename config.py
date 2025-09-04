@@ -40,6 +40,7 @@ DIALOG_HISTORY_LOG = os.path.join(LOG_DIR, "dialog_history.log")
 TELEGRAM_API_BASE = _env("TELEGRAM_API_BASE", "https://api.telegram.org")
 TELEGRAM_TOKEN = _env("TELEGRAM_TOKEN", "", required=True)
 TELEGRAM_CHANNEL_ID = _env("TELEGRAM_CHANNEL_ID", "")
+TELEGRAM_ADMIN_ID = _env("TELEGRAM_ADMIN_ID", "")
 TELEGRAM_PROMO_CHANNELS = _env("TELEGRAM_PROMO_CHANNELS", "")
 
 # === TRENDS / AGENTS ===

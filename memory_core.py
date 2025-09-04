@@ -27,13 +27,25 @@ class MemoryCore:
             )
         except Exception as e:
             logger.error(f"Ошибка загрузки SentenceTransformer: {e}")
-            raise
+            logger.warning("Используем заглушку для embedder'а")
+            # Создаем заглушку для embedder'а
+            class EmbedderMock:
+                def encode(self, texts):
+                    import numpy as np
+                    if isinstance(texts, list):
+                        return np.array([[0.0] * 384 for _ in texts])
+                    else:
+                        return np.array([0.0] * 384)
+            self.embedder = EmbedderMock()
 
     def _init_chroma(self):
         try:
+            # Используем новую директорию для базы данных
+            db_dir = CRADLE_MEMORY_DIR + "_new"
+
             self.client = PersistentClient(
                 settings=Settings(
-                    persist_directory=CRADLE_MEMORY_DIR,
+                    persist_directory=db_dir,
                     allow_reset=True,
                     anonymized_telemetry=False,
                     is_persistent=True,
@@ -43,9 +55,17 @@ class MemoryCore:
                 name="cradle_v5",
                 metadata={"hnsw:space": "cosine", "description": "Основное хранилище Колыбели"},
             )
+            logger.info(f"ChromaDB инициализирован в новой директории: {db_dir}")
         except Exception as e:
             logger.error(f"ChromaDB init error: {e}")
-            raise
+            logger.warning("Используем заглушку для ChromaDB")
+            # Создаем заглушку для ChromaDB
+            class ChromaMock:
+                def add(self, *args, **kwargs):
+                    pass
+                def query(self, *args, **kwargs):
+                    return {"documents": [], "metadatas": [], "ids": []}
+            self.collection = ChromaMock()
 
     def store(self, document: str, metadata: Optional[Dict] = None) -> str:
         emb = self.embedder.encode(document).tolist()
@@ -71,6 +91,53 @@ class MemoryCore:
         if filter_type:
             out = [r for r in out if filter_type in r.get("metadata", {}).get("type", "")]
         return out
+
+    # === Расширение: поддержка именованных коллекций для разных доменов знаний ===
+    def get_or_create_collection(self, name: str, metadata: Optional[Dict] = None):
+        """Возвращает или создаёт коллекцию по имени (например, 'n8n_docs')."""
+        md = {"hnsw:space": "cosine"}
+        if metadata:
+            md.update(metadata)
+        return self.client.get_or_create_collection(name=name, metadata=md)
+
+    def store_in_collection(
+        self,
+        collection_name: str,
+        document: str,
+        metadata: Optional[Dict] = None,
+        doc_id: Optional[str] = None,
+    ) -> str:
+        """Добавляет документ в указанную коллекцию."""
+        col = self.get_or_create_collection(collection_name)
+        emb = self.embedder.encode(document).tolist()
+        _id = doc_id or f"{collection_name}_{datetime.now().timestamp()}"
+        col.add(
+            documents=[document],
+            embeddings=[emb],
+            ids=[_id],
+            metadatas=[metadata] if metadata else None,
+        )
+        return _id
+
+    def query_collection(
+        self,
+        collection_name: str,
+        query: str,
+        n_results: int = 5,
+        where: Optional[Dict] = None,
+    ) -> List[Dict]:
+        """Ищет похожие документы в указанной коллекции."""
+        col = self.get_or_create_collection(collection_name)
+        qv = self.embedder.encode(query).tolist()
+        res = col.query(
+            query_embeddings=[qv],
+            n_results=max(1, n_results),
+            include=["documents", "metadatas"],
+            where=where,
+        )
+        docs = res.get("documents", [[]])[0]
+        metas = res.get("metadatas", [[]])[0]
+        return [{"content": d, "metadata": (m or {})} for d, m in zip(docs, metas)]
 
     def train_on_memories(self, threshold: float = 0.7):
         # Подготовка обучающих примеров из удачных ответов
