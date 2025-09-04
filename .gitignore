@@ -49,3 +49,6 @@ ollama_data/
 *.sqlite
 *.bin
 *.safetensors
+
+# pytest cache
+.pytest_cache/ 
